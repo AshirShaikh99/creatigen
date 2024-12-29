@@ -11,6 +11,9 @@ import { FiPlus } from "react-icons/fi";
 import GradualSpacing from "@/components/ui/gradual-spacing";
 import { Message } from "@/app/lib/messages/messageSlice";
 import axios from "axios";
+import { WarpBackground } from "@/components/ui/warp-background";
+import { cn } from "@/lib/utils";
+import { DotPattern } from "@/components/ui/dot-pattern";
 import {
   Tooltip,
   TooltipContent,
@@ -30,7 +33,7 @@ const ChatPage: React.FC = () => {
 
   const placeholders = [
     "Let's brainstorm some creative ideas!",
-    "How can we innovate in the tech industry?",
+    "How can I help you?",
     "What's the next big thing in AI?",
     "How to build an app?",
     "What is frontend?",
@@ -112,26 +115,23 @@ const ChatPage: React.FC = () => {
       {/* Initial State with Heading and Input */}
       {messages.length === 0 && (
         <div className="flex flex-col items-center justify-center flex-grow space-y-4">
-          {/* Cards Container with Horizontal Scroll */}
-          <div className="w-[calc(100%-4rem)] mx-auto rounded-md  h-[30rem] overflow-hidden">
-            <Vortex
-              backgroundColor="black"
-              className="flex items-center flex-col justify-center px-0 py-4 w-screen h-full"
-            >
-              <h2 className="text-white text-2xl md:text-6xl font-bold text-center">
-                Creative AI
-              </h2>
-              <p className="text-white text-sm md:text-2xl max-w-xl mt-6 text-center">
-                Creative AI helps you to generate creative ideas and brainstorm.
-              </p>
-            </Vortex>
+          <div className="relative flex flex-col h-[500px] w-full items-center justify-center overflow-hidden bg-black md:shadow-xl">
+            <GradualSpacing
+              className="font-display text-center text-2xl font-bold tracking-wide text-white sm:text-lg md:text-6xl"
+              text="Creative AI"
+            />
+            <p className="text-white text-center mt-4">
+              Unlock your creative potential with our AI, designed to help
+              generate innovative ideas.
+            </p>
+            <DotPattern
+              className={cn(
+                "[mask-image:radial-gradient(300px_circle_at_center,white,transparent)]"
+              )}
+            />
           </div>
 
           {/* Text Section */}
-          <GradualSpacing
-            className="font-display text-center text-2xl font-bold tracking-wide text-black sm:text-lg md:text-2xl"
-            text="How Can I Assist You Today?"
-          />
 
           {/* Message Input Section */}
           <div className="flex justify-center w-full px-2 sm:px-4">
