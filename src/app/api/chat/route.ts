@@ -13,10 +13,7 @@ export async function POST(request: Request) {
       ...(context_filter && { context_filter }), // Add context_filter only if it's provided
     };
 
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/c28bd98c-5a1c-4bad-94be-718be1a32ec9/chat/agent/key3`,
-      payload
-    );
+    const response = await axios.post(``, payload);
 
     console.log("Great, we got it:", response.data.response);
 
