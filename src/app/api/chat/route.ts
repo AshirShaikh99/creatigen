@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     };
 
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDSk7IgnHDSrW4iws0Qb-CVrX_VC2iPexM`,
       payload,
       {
         headers: {
