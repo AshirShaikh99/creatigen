@@ -6,12 +6,10 @@ import { RootState } from "@/app/lib/store";
 import { addMessage, resetChat } from "@/app/lib/messages/messageSlice";
 import MessageList from "@/components/chat-page/MessageList";
 
-import { Button } from "@/components/ui/button";
-import { FiPlus } from "react-icons/fi";
 import GradualSpacing from "@/components/ui/gradual-spacing";
 import { Message } from "@/app/lib/messages/messageSlice";
 import axios from "axios";
-import { WarpBackground } from "@/components/ui/warp-background";
+
 import { cn } from "@/lib/utils";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import {
@@ -20,16 +18,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Vortex } from "@/components/ui/vortex";
+
+import { v4 as uuidv4 } from "uuid";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+
 
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 
 const ChatPage: React.FC = () => {
   const dispatch = useDispatch();
+  
   const messages = useSelector((state: RootState) => state.chat.messages);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [resID, setResID] = useState<string | null>(null); // State to store resID
   const [inputValue, setInputValue] = useState<string>("");
+  
 
   const placeholders = [
     "Let's brainstorm some creative ideas!",
@@ -49,7 +52,7 @@ const ChatPage: React.FC = () => {
     if (!text.trim()) return;
 
     const userMessage: Message = {
-      id: Date.now(),
+      id: uuidv4(),
       sender: "user", // Explicitly set the sender to "user"
       text,
     };
@@ -60,15 +63,14 @@ const ChatPage: React.FC = () => {
 
       const response = await axios.post("/api/chat", {
         message: text,
-        query_type: "default",
-        prompt: "",
-        ...(context_filter && { context_filter }), // Add context_filter if provided
       });
 
+      const aiResponseText = response.data.candidates[0]?.content.parts[0]?.text || "I don't have a response right now.";
+
       const aiMessage: Message = {
-        id: Date.now() + 1,
+        id: uuidv4(),
         sender: "ai", // Explicitly set the sender to "ai"
-        text: response.data.response || "I don't have a response right now.",
+        text: aiResponseText,
       };
       dispatch(addMessage(aiMessage));
       // Update resID if available
@@ -76,15 +78,10 @@ const ChatPage: React.FC = () => {
         setResID(response.data.resID);
       }
     } catch (error: unknown) {
-      const errorMessage: Message = {
-        id: Date.now() + 2,
-        sender: "ai", // Explicitly set the sender to "ai"
-        text: "Hi How are you?",
-      };
-      dispatch(addMessage(errorMessage));
-      console.error("Error in handleSendMessage:", error);
+      console.error("Error in POST /api/chat:", error);
+      // Handle error appropriately
     } finally {
-      setIsLoading(false); // Set loading to false after the response
+      setIsLoading(false); // Set loading to false after the response is received
     }
   };
 
@@ -155,12 +152,12 @@ const ChatPage: React.FC = () => {
             <Tooltip>
               <div className="flex justify-start py-4 px-3">
                 <TooltipTrigger asChild>
-                  <Button
+                  <RainbowButton
                     onClick={handleStartNewChat}
                     className="start-new-chat-button p-3  text-white flex items-start justify-start gap-2"
                   >
-                    <FiPlus />
-                  </Button>
+                   Start New Chat 
+                  </RainbowButton>
                 </TooltipTrigger>
               </div>
               <TooltipContent>

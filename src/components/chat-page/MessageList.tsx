@@ -1,15 +1,14 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-
-// Import toast library
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import docco from "react-syntax-highlighter/dist/esm/styles/prism";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Message {
-  id: number;
+  id: string;
   sender: "user" | "ai";
   text: string;
   reaction?: "thumbsUp" | "thumbsDown" | null;
@@ -21,6 +20,7 @@ interface MessageListProps {
   loading: boolean;
   responseID: string;
 }
+
 interface CodeProps {
   inline?: boolean;
   className?: string;
@@ -36,80 +36,77 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
 
   return (
     <div className="space-y-4 overflow-x-hidden">
-      {messages.map((msg) => (
-        <div
-          key={msg.id}
-          className={`flex ${
-            msg.sender === "user" ? "justify-end" : "justify-start"
-          } items-start`}
-        >
-          {/* AI Avatar */}
-          {/* {msg.sender === "ai" && (
-              <div className="w-10 h-10 rounded-full border-black border-dotted flex items-center justify-center mr-2">
-                <Image
-                  src="/assets/logo/blockchain.png"
-                  alt="Logo"
-                  width={100}
-                  height={50}
-                  className="invert"
-                />
-              </div>
-            )} */}
-
-          {/* Message Content */}
-          <div
-            className={`p-3 rounded-xl max-w-[60%] ${
-              msg.sender === "user"
-                ? "bg-white text-black self-end animate-slide-in"
-                : "text-white self-start border border-gray-300 animate-fade-text "
-            } break-words`}
+      <AnimatePresence>
+        {messages.map((msg) => (
+          <motion.div
+            key={msg.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className={`flex ${
+              msg.sender === "user" ? "justify-end" : "justify-start"
+            } items-start`}
           >
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                code({ inline, className, children, ...props }: CodeProps) {
-                  const match = /language-(\w+)/.exec(className || "");
-                  if (inline) {
+            <motion.div
+              className={`p-3 rounded-xl max-w-[60%] ${
+                msg.sender === "user"
+                  ? "bg-white text-black self-end"
+                  : "bg-gray-800 text-white self-start"
+              } break-words`}
+            >
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  code({ inline, className, children, ...props }: CodeProps) {
+                    const match = /language-(\w+)/.exec(className || "");
+                    if (inline) {
+                      return (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    } else if (match) {
+                      return (
+                        <SyntaxHighlighter
+                          style={docco}
+                          language={match[1]}
+                          PreTag="div"
+                          {...props}
+                        >
+                          {String(children).replace(/\n$/, "")}
+                        </SyntaxHighlighter>
+                      );
+                    }
                     return (
                       <code className={className} {...props}>
                         {children}
                       </code>
                     );
-                  } else if (match) {
-                    return (
-                      <SyntaxHighlighter
-                        style={docco}
-                        language={match[1]}
-                        PreTag="div"
-                        {...props}
-                      >
-                        {String(children).replace(/\n$/, "")}
-                      </SyntaxHighlighter>
-                    );
-                  }
-                  return (
-                    <code className={className} {...props}>
-                      {children}
-                    </code>
-                  );
-                },
-              }}
-            >
-              {msg.text}
-            </ReactMarkdown>
-            {/* Reaction Buttons */}
-          </div>
-        </div>
-      ))}
+                  },
+                }}
+              >
+                {msg.text}
+              </ReactMarkdown>
+            </motion.div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
 
-      {/* Loading Spinner */}
       {loading && (
-        <div className="flex justify-start items-center">
-          <span className="loading loading-ring loading-lg"></span>
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex justify-start items-start"
+        >
+          <div className="p-3 rounded-xl max-w-[60%] text-white self-start break-words">
+            <div className="flex justify-center items-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+            </div>
+          </div>
+        </motion.div>
       )}
 
-      {/* Auto-scroll target */}
       <div ref={messagesEndRef}></div>
     </div>
   );

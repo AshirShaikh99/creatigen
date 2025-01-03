@@ -3,19 +3,27 @@ import axios from "axios";
 
 export async function POST(request: Request) {
   try {
-    const { message, query_type, prompt, context_filter } =
-      await request.json();
+    const { message } = await request.json();
 
     const payload = {
-      message,
-      query_type,
-      prompt,
-      ...(context_filter && { context_filter }), // Add context_filter only if it's provided
+      contents: [
+        {
+          parts: [{ text: message }],
+        },
+      ],
     };
 
-    const response = await axios.post(``, payload);
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    console.log("Great, we got it:", response.data.response);
+    console.log("Great, we got it:", response.data);
 
     // Send the AI response back to the client
     return NextResponse.json(response.data, { status: 200 });

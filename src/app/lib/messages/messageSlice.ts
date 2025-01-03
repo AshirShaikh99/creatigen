@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Message {
-  id: number;
+  id: string;
   sender: "user" | "ai";
   text: string;
   reaction?: "thumbsUp" | "thumbsDown" | null; // Add the reaction field here
@@ -34,7 +34,7 @@ const chatSlice = createSlice({
     setReaction: (
       state,
       action: PayloadAction<{
-        messageId: number;
+        messageId: string;
         reaction: "thumbsUp" | "thumbsDown" | null;
       }>
     ) => {

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Poppins } from "next/font/google";
 import { Providers } from "@/app/providers";
 import { Toaster } from "react-hot-toast";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const poppins = Poppins({
   subsets: ["latin"],
   weight: "400",
 });
@@ -28,7 +28,7 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
         />
       </head>
-      <body className={`${plusJakartaSans.className} antialiased`}>
+      <body className={`${poppins.className} antialiased`}>
         {/* Ensuring container with safe overflow */}
         <div className="min-h-screen flex flex-col overflow-hidden">
           <Providers>
