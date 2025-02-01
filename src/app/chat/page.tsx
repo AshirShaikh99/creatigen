@@ -22,17 +22,15 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 
-
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 
 const ChatPage: React.FC = () => {
   const dispatch = useDispatch();
-  
+
   const messages = useSelector((state: RootState) => state.chat.messages);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [resID, setResID] = useState<string | null>(null); // State to store resID
   const [inputValue, setInputValue] = useState<string>("");
-  
 
   const placeholders = [
     "Let's brainstorm some creative ideas!",
@@ -48,7 +46,7 @@ const ChatPage: React.FC = () => {
   };
 
   // Handle sending a message
-  const handleSendMessage = async (text: string, context_filter?: object) => {
+  const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
 
     const userMessage: Message = {
@@ -65,7 +63,9 @@ const ChatPage: React.FC = () => {
         message: text,
       });
 
-      const aiResponseText = response.data.candidates[0]?.content.parts[0]?.text || "I don't have a response right now.";
+      const aiResponseText =
+        response.data.candidates[0]?.content.parts[0]?.text ||
+        "I don't have a response right now.";
 
       const aiMessage: Message = {
         id: uuidv4(),
@@ -115,11 +115,12 @@ const ChatPage: React.FC = () => {
           <div className="relative flex flex-col h-[500px] w-full items-center justify-center overflow-hidden bg-black md:shadow-xl">
             <GradualSpacing
               className="font-display text-center text-2xl font-bold tracking-wide text-white sm:text-lg md:text-6xl"
-              text="Creative AI"
+              text="LightingChat"
             />
             <p className="text-white text-center mt-4">
-              Unlock your creative potential with our AI, designed to help
-              generate innovative ideas.
+              LightingChat is your complete solution for creating AI-powered
+              applications. Whether youre a developer, designer, or project
+              manager, LightingChat has you covered.
             </p>
             <DotPattern
               className={cn(
@@ -156,7 +157,7 @@ const ChatPage: React.FC = () => {
                     onClick={handleStartNewChat}
                     className="start-new-chat-button p-3  text-white flex items-start justify-start gap-2"
                   >
-                   Start New Chat 
+                    Start New Chat
                   </RainbowButton>
                 </TooltipTrigger>
               </div>
