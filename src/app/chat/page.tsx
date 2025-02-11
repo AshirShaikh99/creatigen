@@ -203,7 +203,7 @@ const ChatPage: React.FC = () => {
               text="Creatigen"
             />
             <p className="text-white text-lg sm:text-xl">
-              Unleash Infinite Creativity, One Idea at a Time! 🚀✨
+              Unlock Infinite Creativity – Transform Ideas into Reality!
             </p>
           </div>
 

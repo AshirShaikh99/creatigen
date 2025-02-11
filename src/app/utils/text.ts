@@ -1,26 +1,26 @@
 export const reviews = [
   {
-    prompt: "💡 Generate innovative app ideas for healthcare",
+    prompt: "🎨 Generate modern UI/UX design ideas for apps",
   },
   {
-    prompt: "🎨 Brainstorm creative UI color combinations",
+    prompt: "📱 Suggest intuitive mobile app navigation patterns",
   },
   {
-    prompt: "🚀 Suggest startup ideas for Web3",
+    prompt: "✨ Draw a diagram for app architecture",
   },
   {
-    prompt: "📱 List unique mobile app concepts",
+    prompt: "📊 Draw a system flow diagram for an app",
   },
   {
-    prompt: "🌟 Generate ideas for social media features",
+    prompt: "⚡ Explore creative micro-interactions for app design",
   },
   {
-    prompt: "🎯 Brainstorm productivity app concepts",
+    prompt: "💡 Generate innovative app development ideas",
   },
   {
-    prompt: "🌐 Suggest innovative web app ideas",
+    prompt: "🛠️ Draw a wireframe for an app interface",
   },
   {
-    prompt: "🤖 Generate AI-powered app concepts",
+    prompt: "🤖 Discover AI-powered app development trends",
   },
 ];
