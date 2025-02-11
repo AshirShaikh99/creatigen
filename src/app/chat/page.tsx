@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/app/lib/store";
+import type { RootState } from "@/app/lib/store";
 import { addMessage, resetChat } from "@/app/lib/messages/messageSlice";
 import MessageList from "@/components/chat-page/MessageList";
-
 import GradualSpacing from "@/components/ui/gradual-spacing";
-import { Message } from "@/app/lib/messages/messageSlice";
+import type { Message } from "@/app/lib/messages/messageSlice";
 import axios from "axios";
-
 import { cn } from "@/lib/utils";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import {
@@ -18,19 +17,21 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
 import { v4 as uuidv4 } from "uuid";
 import { RainbowButton } from "@/components/ui/rainbow-button";
-
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+import { Marquee } from "@/components/magicui/marquee";
+import { PromptCard } from "@/components/prompt-cards";
+import { reviews } from "@/app/utils/text";
 
 const ChatPage: React.FC = () => {
   const dispatch = useDispatch();
-
   const messages = useSelector((state: RootState) => state.chat.messages);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [resID, setResID] = useState<string | null>(null); // State to store resID
+  const [sessionId] = useState<string>(uuidv4());
   const [inputValue, setInputValue] = useState<string>("");
+  const firstRow = reviews.slice(0, reviews.length / 2);
+  const secondRow = reviews.slice(reviews.length / 2);
 
   const placeholders = [
     "Let's brainstorm some creative ideas!",
@@ -39,49 +40,53 @@ const ChatPage: React.FC = () => {
     "How to build an app?",
     "What is frontend?",
   ];
-  // Start a new chat by clearing the message list
+
   const handleStartNewChat = () => {
     dispatch(resetChat());
-    setResID(null);
   };
 
-  // Handle sending a message
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
 
     const userMessage: Message = {
       id: uuidv4(),
-      sender: "user", // Explicitly set the sender to "user"
+      sender: "user",
       text,
     };
     dispatch(addMessage(userMessage));
 
     try {
-      setIsLoading(true); // Set loading to true while awaiting AI response
-
-      const response = await axios.post("/api/chat", {
-        message: text,
-      });
-
-      const aiResponseText =
-        response.data.candidates[0]?.content.parts[0]?.text ||
-        "I don't have a response right now.";
+      setIsLoading(true);
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/chat",
+        {
+          message: text,
+          session_id: sessionId,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "user-id": sessionId,
+          },
+        }
+      );
 
       const aiMessage: Message = {
         id: uuidv4(),
-        sender: "ai", // Explicitly set the sender to "ai"
-        text: aiResponseText,
+        sender: "ai",
+        text: response.data.message || "I don't have a response right now.",
       };
       dispatch(addMessage(aiMessage));
-      // Update resID if available
-      if (response.data.response_id) {
-        setResID(response.data.resID);
-      }
     } catch (error: unknown) {
-      console.error("Error in POST /api/chat:", error);
-      // Handle error appropriately
+      console.error("Error in chat request:", error);
+      const errorMessage: Message = {
+        id: uuidv4(),
+        sender: "ai",
+        text: "Sorry, I'm having trouble connecting to the server. Please make sure the backend server is running at http://localhost:8000/api/chat",
+      };
+      dispatch(addMessage(errorMessage));
     } finally {
-      setIsLoading(false); // Set loading to false after the response is received
+      setIsLoading(false);
     }
   };
 
@@ -92,70 +97,69 @@ const ChatPage: React.FC = () => {
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     handleSendMessage(inputValue);
-    setInputValue(""); // Clear the input field after sending the message
+    setInputValue("");
   };
 
-  // Once connected, render the entire UI
   return (
-    <div className="flex flex-col items-center justify-between h-screen bg-black text-gray-800">
-      {/* Header */}
-      {/* <div className="w-full max-w-4xl flex items-center justify-center p-4">
-        <Image
-          src="/assets/logo/blockchain.png"
-          alt="Logo"
-          width={100}
-          height={50}
-          className="invert"
-        />
-      </div> */}
+    <div className="flex flex-col min-h-screen bg-black text-gray-800 relative">
+      <DotPattern
+        className={cn(
+          "absolute inset-0 w-full h-full opacity-20",
+          "[mask-image:radial-gradient(100% 100% at center center,white,transparent)]"
+        )}
+      />
 
-      {/* Initial State with Heading and Input */}
-      {messages.length === 0 && (
-        <div className="flex flex-col items-center justify-center flex-grow space-y-4">
-          <div className="relative flex flex-col h-[500px] w-full items-center justify-center overflow-hidden bg-black md:shadow-xl">
+      {messages.length === 0 ? (
+        <main className="flex flex-col items-center justify-center flex-1 px-4 py-12 sm:px-6 lg:px-8">
+          {/* Title Section */}
+          <div className="text-center mb-12 sm:mb-16">
             <GradualSpacing
-              className="font-display text-center text-2xl font-bold tracking-wide text-white sm:text-lg md:text-6xl"
-              text="LightingChat"
+              className="font-display text-4xl sm:text-5xl md:text-6xl font-bold tracking-wide text-white mb-6"
+              text="Creatigen"
             />
-            <p className="text-white text-center mt-4">
-              LightingChat is your complete solution for creating AI-powered
-              applications. Whether youre a developer, designer, or project
-              manager, LightingChat has you covered.
+            <p className="text-white text-lg sm:text-xl">
+              Unleash Infinite Creativity, One Idea at a Time! 🚀✨
             </p>
-            <DotPattern
-              className={cn(
-                "[mask-image:radial-gradient(300px_circle_at_center,white,transparent)]"
-              )}
-            />
           </div>
 
-          {/* Text Section */}
-
-          {/* Message Input Section */}
-          <div className="flex justify-center w-full px-2 sm:px-4">
-            <div className="w-full max-w-full sm:max-w-[400px]">
-              <PlaceholdersAndVanishInput
-                placeholders={placeholders}
-                onChange={handleInputChange}
-                onSubmit={handleFormSubmit}
-                // Ensure the input value is controlled
-              />
+          {/* Prompt Cards Section */}
+          <div className="w-full max-w-5xl mx-auto mb-12 sm:mb-16">
+            <div className="relative">
+              <Marquee pauseOnHover className="[--duration:20s] mb-6">
+                {firstRow.map((review) => (
+                  <PromptCard key={review.prompt} {...review} />
+                ))}
+              </Marquee>
+              <Marquee reverse pauseOnHover className="[--duration:20s]">
+                {secondRow.map((review) => (
+                  <PromptCard key={review.prompt} {...review} />
+                ))}
+              </Marquee>
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-black"></div>
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-black"></div>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Chat State */}
-      {messages.length > 0 && (
-        <div className="flex flex-col w-full max-w-4xl h-screen flex-grow overflow-x-hidden">
+          {/* Input Section */}
+          <div className="w-full max-w-2xl mx-auto px-4">
+            <PlaceholdersAndVanishInput
+              placeholders={placeholders}
+              onChange={handleInputChange}
+              onSubmit={handleFormSubmit}
+              value={inputValue}
+              className="w-full"
+            />
+          </div>
+        </main>
+      ) : (
+        <div className="flex flex-col h-screen">
           <TooltipProvider>
-            {/* New Chat Button (Visible on all screen sizes) */}
             <Tooltip>
-              <div className="flex justify-start py-4 px-3">
+              <div className="flex justify-start p-4">
                 <TooltipTrigger asChild>
                   <RainbowButton
                     onClick={handleStartNewChat}
-                    className="start-new-chat-button p-3  text-white flex items-start justify-start gap-2"
+                    className="start-new-chat-button p-3 text-white flex items-center gap-2"
                   >
                     Start New Chat
                   </RainbowButton>
@@ -167,25 +171,19 @@ const ChatPage: React.FC = () => {
             </Tooltip>
           </TooltipProvider>
 
-          {/* Messages Container: Scrollable only on mobile */}
-          <div className="w-full flex-grow p-4 overflow-y-auto flex-1 sm:overflow-y-auto sm:flex-grow max-h-[calc(100vh-150px)]">
-            <MessageList
-              messages={messages}
-              loading={isLoading}
-              responseID={resID || ""}
-            />
+          <div className="flex-1 overflow-y-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <MessageList messages={messages} loading={isLoading} />
+            </div>
           </div>
 
-          {/* Message Input: Fixed at the bottom */}
-          <div className="flex justify-center w-full px-2 sm:px-4 pb-4">
-            {" "}
-            {/* Added pb-4 */}
-            <div className="w-full max-w-full sm:max-w-[900px]">
+          <div className="border-t border-gray-800 bg-black/50 backdrop-blur-sm">
+            <div className="max-w-4xl mx-auto p-4">
               <PlaceholdersAndVanishInput
                 placeholders={placeholders}
                 onChange={handleInputChange}
                 onSubmit={handleFormSubmit}
-                // Ensure the input value is controlled
+                value={inputValue}
               />
             </div>
           </div>

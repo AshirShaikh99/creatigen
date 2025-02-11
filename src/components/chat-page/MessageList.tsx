@@ -18,7 +18,6 @@ interface Message {
 interface MessageListProps {
   messages: Message[];
   loading: boolean;
-  responseID: string;
 }
 
 interface CodeProps {

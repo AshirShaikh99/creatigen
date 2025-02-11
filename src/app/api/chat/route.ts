@@ -1,36 +1,37 @@
-import { NextResponse } from "next/server";
-import axios from "axios";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { message } = await request.json();
+    const body = await req.json();
+    const userId = req.headers.get("user-id");
 
-    const payload = {
-      contents: [
-        {
-          parts: [{ text: message }],
-        },
-      ],
-    };
+    if (!userId) {
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 }
+      );
+    }
 
-    const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDSk7IgnHDSrW4iws0Qb-CVrX_VC2iPexM`,
-      payload,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await fetch("http://localhost:8000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "user-id": userId,
+      },
+      body: JSON.stringify(body),
+    });
 
-    console.log("Great, we got it:", response.data);
+    if (!response.ok) {
+      const error = await response.json();
+      return NextResponse.json(error, { status: response.status });
+    }
 
-    // Send the AI response back to the client
-    return NextResponse.json(response.data, { status: 200 });
+    const data = await response.json();
+    return NextResponse.json(data);
   } catch (error) {
-    console.error("Error in POST /api/chat:", error);
+    console.error("Chat API Error:", error);
     return NextResponse.json(
-      { error: "An unexpected error occurred." },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
