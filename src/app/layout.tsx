@@ -10,8 +10,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "ChatBot Template",
-  description: "ChatBot",
+  title: "Creatigen",
+  description: "Be Creative",
 };
 
 export default function RootLayout({

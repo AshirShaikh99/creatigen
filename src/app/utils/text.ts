@@ -3,7 +3,7 @@ export const reviews = [
     prompt: "🎨 Generate modern UI/UX design ideas for apps",
   },
   {
-    prompt: "📱 Suggest intuitive mobile app navigation patterns",
+    prompt: "✨ Suggest intuitive mobile app navigation patterns",
   },
   {
     prompt: "✨ Draw a diagram for app architecture",
