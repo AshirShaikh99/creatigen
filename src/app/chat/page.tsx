@@ -23,6 +23,8 @@ import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-van
 import { Marquee } from "@/components/magicui/marquee";
 import { PromptCard } from "@/components/prompt-cards";
 import { reviews } from "@/app/utils/text";
+import { ShimmerButton } from "@/components/magicui/shimmer-button";
+import { Button } from "@/components/ui/button";
 
 const ChatPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -157,12 +159,12 @@ const ChatPage: React.FC = () => {
             <Tooltip>
               <div className="flex justify-start p-4">
                 <TooltipTrigger asChild>
-                  <RainbowButton
+                  <ShimmerButton
                     onClick={handleStartNewChat}
                     className="start-new-chat-button p-3 text-white flex items-center gap-2"
                   >
                     Start New Chat
-                  </RainbowButton>
+                  </ShimmerButton>
                 </TooltipTrigger>
               </div>
               <TooltipContent>

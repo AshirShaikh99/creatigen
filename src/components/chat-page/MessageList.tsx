@@ -52,7 +52,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
               className={`p-3 rounded-xl ${
                 msg.sender === "user"
                   ? "max-w-[75%] md:max-w-[60%] bg-white text-black self-end"
-                  : "max-w-[85%] md:max-w-[75%] bg-gray-800 text-white self-start"
+                  : "max-w-[85%] md:max-w-[75%] bg-black/50 backdrop-blur-sm border border-white/10 text-white self-start"
               } break-words`}
             >
               <ReactMarkdown
@@ -100,7 +100,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
           className="flex justify-start items-start pl-4"
         >
           <motion.div
-            className="p-4 rounded-xl bg-gradient-to-r from-gray-800 to-gray-700 text-white/90 shadow-xl"
+            className="p-4 rounded-xl bg-black/50 backdrop-blur-sm border border-white/10 text-white/90"
             initial={{ scale: 0.95 }}
             animate={{ scale: 1 }}
             transition={{
@@ -109,7 +109,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
             }}
           >
             <motion.div className="flex items-center gap-3">
-              <span className="text-sm font-medium">Generating ideas</span>
+              <span className="text-sm font-medium">Generating</span>
               <div className="flex gap-1">
                 {[0, 1, 2].map((i) => (
                   <motion.div
