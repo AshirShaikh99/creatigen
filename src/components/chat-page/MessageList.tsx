@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import docco from "react-syntax-highlighter/dist/esm/styles/prism";
 import { motion, AnimatePresence } from "framer-motion";
+import mermaid from "mermaid";
 
 interface Message {
   id: string;
@@ -14,6 +15,8 @@ interface Message {
   text: string;
   reaction?: "thumbsUp" | "thumbsDown" | null;
   feedback?: string;
+  type?: "text" | "diagram";
+  diagramData?: string;
 }
 
 interface MessageListProps {
@@ -28,11 +31,74 @@ interface CodeProps {
 }
 
 const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "dark",
+      securityLevel: "loose",
+    });
+  }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messagesEndRef.current]); // Updated dependency
+    if (messages.some((msg) => msg.type === "diagram")) {
+      mermaid.contentLoaded();
+    }
+  }, [messages]);
+
+  const renderContent = (msg: Message) => {
+    if (msg.type === "diagram" && msg.diagramData) {
+      return (
+        <>
+          {msg.text && (
+            <div className="mb-3">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {msg.text}
+              </ReactMarkdown>
+            </div>
+          )}
+          <div className="bg-white/10 p-4 rounded-lg overflow-x-auto">
+            <pre className="mermaid">{msg.diagramData}</pre>
+          </div>
+        </>
+      );
+    }
+
+    return (
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          code({ inline, className, children, ...props }: CodeProps) {
+            const match = /language-(\w+)/.exec(className || "");
+            if (inline) {
+              return (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              );
+            } else if (match) {
+              return (
+                <SyntaxHighlighter
+                  style={docco}
+                  language={match[1]}
+                  PreTag="div"
+                  {...props}
+                >
+                  {String(children).replace(/\n$/, "")}
+                </SyntaxHighlighter>
+              );
+            }
+            return (
+              <code className={className} {...props}>
+                {children}
+              </code>
+            );
+          },
+        }}
+      >
+        {msg.text}
+      </ReactMarkdown>
+    );
+  };
 
   return (
     <div className="space-y-4 overflow-x-hidden">
@@ -55,39 +121,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
                   : "max-w-[85%] md:max-w-[75%] bg-black/50 backdrop-blur-sm border border-white/10 text-white self-start"
               } break-words`}
             >
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  code({ inline, className, children, ...props }: CodeProps) {
-                    const match = /language-(\w+)/.exec(className || "");
-                    if (inline) {
-                      return (
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      );
-                    } else if (match) {
-                      return (
-                        <SyntaxHighlighter
-                          style={docco}
-                          language={match[1]}
-                          PreTag="div"
-                          {...props}
-                        >
-                          {String(children).replace(/\n$/, "")}
-                        </SyntaxHighlighter>
-                      );
-                    }
-                    return (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    );
-                  },
-                }}
-              >
-                {msg.text}
-              </ReactMarkdown>
+              {renderContent(msg)}
             </motion.div>
           </motion.div>
         ))}
@@ -146,7 +180,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
         </motion.div>
       )}
 
-      <div ref={messagesEndRef} />
+      <div />
     </div>
   );
 };

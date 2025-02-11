@@ -18,13 +18,22 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { v4 as uuidv4 } from "uuid";
-import { RainbowButton } from "@/components/ui/rainbow-button";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { Marquee } from "@/components/magicui/marquee";
 import { PromptCard } from "@/components/prompt-cards";
 import { reviews } from "@/app/utils/text";
 import { ShimmerButton } from "@/components/magicui/shimmer-button";
-import { Button } from "@/components/ui/button";
+
+interface DiagramResponse {
+  diagram_type: string;
+  syntax: string;
+  description: string;
+  metadata: {
+    options: Record<string, unknown>;
+    model: string;
+    tokens: number;
+  };
+}
 
 const ChatPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -36,55 +45,130 @@ const ChatPage: React.FC = () => {
   const secondRow = reviews.slice(reviews.length / 2);
 
   const placeholders = [
-    "Let's brainstorm some creative ideas!",
+    "/diagram Create a flowchart for user registration",
+    "/diagram Draw a sequence diagram for API flow",
+    "/diagram Generate an ER diagram for blog",
     "How can I help you?",
     "What's the next big thing in AI?",
-    "How to build an app?",
-    "What is frontend?",
   ];
 
-  const handleStartNewChat = () => {
-    dispatch(resetChat());
+  const diagramKeywords = [
+    "draw",
+    "diagram",
+    "flowchart",
+    "sequence",
+    "graph",
+    "chart",
+    "er diagram",
+  ];
+
+  const isDiagramRequest = (text: string): boolean => {
+    const normalizedText = text.toLowerCase();
+    // Check both /diagram command and diagram-related keywords
+    return (
+      normalizedText.startsWith("/diagram") ||
+      diagramKeywords.some((keyword) => normalizedText.includes(keyword))
+    );
+  };
+
+  const processDiagramResponse = async (
+    response: DiagramResponse
+  ): Promise<Message> => {
+    // Clean up the Mermaid syntax by removing any code block markers
+    let mermaidSyntax = response.syntax;
+    if (mermaidSyntax.includes("```")) {
+      mermaidSyntax =
+        mermaidSyntax.match(/```(?:lua|mermaid)?\n?([\s\S]*?)```/)?.[1] || "";
+    }
+
+    return {
+      id: uuidv4(),
+      sender: "ai",
+      text: response.description,
+      type: "diagram",
+      diagramData: mermaidSyntax.trim(),
+    };
+  };
+
+  const processTextResponse = (message: string): Message => {
+    return {
+      id: uuidv4(),
+      sender: "ai",
+      text: message,
+      type: "text",
+    };
   };
 
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
 
+    const messageContent = text.trim();
+    const isDiagram = isDiagramRequest(messageContent);
+
+    console.log("Message type detection:", {
+      originalText: messageContent,
+      isDiagram: isDiagram,
+      normalizedText: messageContent.toLowerCase(),
+      matchedKeyword: isDiagram
+        ? diagramKeywords.find((keyword) =>
+            messageContent.toLowerCase().includes(keyword)
+          )
+        : null,
+    });
+
     const userMessage: Message = {
       id: uuidv4(),
       sender: "user",
-      text,
+      text: messageContent,
+      type: isDiagram ? "diagram" : "text",
     };
+
     dispatch(addMessage(userMessage));
 
     try {
       setIsLoading(true);
-      const response = await axios.post(
-        "http://localhost:8000/api/v1/chat",
-        {
-          message: text,
-          session_id: sessionId,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "user-id": sessionId,
-          },
-        }
-      );
+      const endpoint = isDiagram
+        ? "http://localhost:8000/api/v1/diagram"
+        : "http://localhost:8000/api/v1/chat";
 
-      const aiMessage: Message = {
-        id: uuidv4(),
-        sender: "ai",
-        text: response.data.message || "I don't have a response right now.",
+      console.log("Sending request to:", {
+        endpoint,
+        messageType: isDiagram ? "diagram" : "chat",
+        content: messageContent,
+      });
+
+      // Prepare the message for the diagram endpoint
+      const requestData = {
+        message:
+          isDiagram && !messageContent.startsWith("/diagram")
+            ? `/diagram ${messageContent}` // Add /diagram prefix if it's missing
+            : messageContent,
+        session_id: sessionId,
       };
+
+      const response = await axios.post(endpoint, requestData, {
+        headers: {
+          "Content-Type": "application/json",
+          "user-id": sessionId,
+        },
+      });
+
+      console.log("Response received:", response.data);
+
+      const aiMessage = isDiagram
+        ? await processDiagramResponse(response.data as DiagramResponse)
+        : processTextResponse(response.data.message);
+
       dispatch(addMessage(aiMessage));
-    } catch (error: unknown) {
-      console.error("Error in chat request:", error);
+    } catch (error) {
+      console.error("Error in request:", error);
       const errorMessage: Message = {
         id: uuidv4(),
         sender: "ai",
-        text: "Sorry, I'm having trouble connecting to the server. Please make sure the backend server is running at http://localhost:8000/api/chat",
+        text: isDiagram
+          ? "Sorry, I couldn't generate the diagram. Please try again."
+          : "Sorry, I'm having trouble connecting to the server.",
+        type: "text",
       };
       dispatch(addMessage(errorMessage));
     } finally {
@@ -113,7 +197,6 @@ const ChatPage: React.FC = () => {
 
       {messages.length === 0 ? (
         <main className="flex flex-col items-center justify-center flex-1 px-4 py-12 sm:px-6 lg:px-8">
-          {/* Title Section */}
           <div className="text-center mb-12 sm:mb-16">
             <GradualSpacing
               className="font-display text-4xl sm:text-5xl md:text-6xl font-bold tracking-wide text-white mb-6"
@@ -124,7 +207,6 @@ const ChatPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Prompt Cards Section */}
           <div className="w-full max-w-5xl mx-auto mb-12 sm:mb-16">
             <div className="relative">
               <Marquee pauseOnHover className="[--duration:20s] mb-6">
@@ -142,7 +224,6 @@ const ChatPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Input Section */}
           <div className="w-full max-w-2xl mx-auto px-4">
             <PlaceholdersAndVanishInput
               placeholders={placeholders}
@@ -160,7 +241,7 @@ const ChatPage: React.FC = () => {
               <div className="flex justify-start p-4">
                 <TooltipTrigger asChild>
                   <ShimmerButton
-                    onClick={handleStartNewChat}
+                    onClick={() => dispatch(resetChat())}
                     className="start-new-chat-button p-3 text-white flex items-center gap-2"
                   >
                     Start New Chat

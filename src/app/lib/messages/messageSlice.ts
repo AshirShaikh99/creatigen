@@ -4,8 +4,10 @@ export interface Message {
   id: string;
   sender: "user" | "ai";
   text: string;
-  reaction?: "thumbsUp" | "thumbsDown" | null; // Add the reaction field here
-  isComplete?: boolean; // Mark if the message is complete
+  type?: "text" | "diagram";
+  diagramData?: string;
+  reaction?: "thumbsUp" | "thumbsDown" | null;
+  isComplete?: boolean;
 }
 
 interface ChatState {
@@ -27,7 +29,11 @@ const chatSlice = createSlice({
       state.ongoingMessage = null; // Reset ongoing message
     },
     addMessage: (state, action: PayloadAction<Message>) => {
-      state.messages.push(action.payload);
+      const message = {
+        ...action.payload,
+        type: action.payload.type || "text",
+      };
+      state.messages.push(message);
     },
 
     // Action to set a reaction on a message
