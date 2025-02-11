@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import type React from "react";
+import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -31,7 +32,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messagesEndRef.current]); // Updated dependency
 
   return (
     <div className="space-y-4 overflow-x-hidden">
@@ -48,10 +49,10 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
             } items-start`}
           >
             <motion.div
-              className={`p-3 rounded-xl max-w-[60%] ${
+              className={`p-3 rounded-xl ${
                 msg.sender === "user"
-                  ? "bg-white text-black self-end"
-                  : "bg-gray-800 text-white self-start"
+                  ? "max-w-[75%] md:max-w-[60%] bg-white text-black self-end"
+                  : "max-w-[85%] md:max-w-[75%] bg-gray-800 text-white self-start"
               } break-words`}
             >
               <ReactMarkdown
@@ -96,17 +97,56 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex justify-start items-start"
+          className="flex justify-start items-start pl-4"
         >
-          <div className="p-3 rounded-xl max-w-[60%] text-white self-start break-words">
-            <div className="flex justify-center items-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-            </div>
-          </div>
+          <motion.div
+            className="p-4 rounded-xl bg-gradient-to-r from-gray-800 to-gray-700 text-white/90 shadow-xl"
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            transition={{
+              duration: 0.2,
+              ease: "easeOut",
+            }}
+          >
+            <motion.div className="flex items-center gap-3">
+              <span className="text-sm font-medium">Generating ideas</span>
+              <div className="flex gap-1">
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-2 h-2 rounded-full bg-white/80"
+                    initial={{ scale: 0.8 }}
+                    animate={{
+                      scale: [0.8, 1.2, 0.8],
+                      opacity: [0.5, 1, 0.5],
+                    }}
+                    transition={{
+                      duration: 1,
+                      repeat: Number.POSITIVE_INFINITY,
+                      delay: i * 0.2,
+                      ease: "easeInOut",
+                    }}
+                  />
+                ))}
+              </div>
+              <motion.div
+                className="absolute inset-0 rounded-xl bg-white/5"
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: [0, 0.5, 0],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                }}
+              />
+            </motion.div>
+          </motion.div>
         </motion.div>
       )}
 
-      <div ref={messagesEndRef}></div>
+      <div ref={messagesEndRef} />
     </div>
   );
 };

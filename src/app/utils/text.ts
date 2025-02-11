@@ -1,20 +1,26 @@
 export const reviews = [
   {
-    prompt: "🌆 Generate stunning futuristic cityscapes",
+    prompt: "💡 Generate innovative app ideas for healthcare",
   },
   {
-    prompt: "📚 Write a fantasy short story",
+    prompt: "🎨 Brainstorm creative UI color combinations",
   },
   {
-    prompt: "💻 Explain quantum computing concepts",
+    prompt: "🚀 Suggest startup ideas for Web3",
   },
   {
-    prompt: "🎨 Design a surreal digital artwork",
+    prompt: "📱 List unique mobile app concepts",
   },
   {
-    prompt: "💡 Generate innovative startup ideas",
+    prompt: "🌟 Generate ideas for social media features",
   },
   {
-    prompt: "🔭 Explain mysteries of the universe",
+    prompt: "🎯 Brainstorm productivity app concepts",
+  },
+  {
+    prompt: "🌐 Suggest innovative web app ideas",
+  },
+  {
+    prompt: "🤖 Generate AI-powered app concepts",
   },
 ];
