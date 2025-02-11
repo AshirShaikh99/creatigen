@@ -1,15 +1,31 @@
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
+import { MagicCard } from "@/components/magicui/magic-card";
 
 export const PromptCard = ({ prompt }: { prompt: string }) => {
+  const { theme } = useTheme();
+
   return (
-    <figure
-      className={cn(
-        "relative h-full w-64 cursor-pointer overflow-hidden rounded-xl border p-4 mx-2",
-        "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
-        "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
-      )}
+    <motion.div
+      whileHover={{
+        scale: 1.02,
+        borderRadius: "1.2rem",
+        transition: { duration: 0.2 },
+      }}
     >
-      <blockquote className="text-sm text-white">{prompt}</blockquote>
-    </figure>
+      <MagicCard
+        className={cn(
+          "relative h-full w-64 overflow-hidden rounded-xl p-4 mx-2",
+          "cursor-pointer flex items-center justify-center",
+          "text-sm"
+        )}
+        gradientColor={theme === "dark" ? "#262626" : "#D9D9D955"}
+      >
+        <blockquote className="text-black text-center w-full break-words whitespace-normal">
+          {prompt}
+        </blockquote>
+      </MagicCard>
+    </motion.div>
   );
 };
