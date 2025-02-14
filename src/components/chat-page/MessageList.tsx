@@ -115,13 +115,53 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
             } items-start`}
           >
             <motion.div
-              className={`p-4 rounded-xl ${
+              className={`p-4 rounded-xl relative overflow-hidden ${
                 msg.sender === "user"
-                  ? "max-w-[75%] md:max-w-[60%] bg-white text-black self-end"
-                  : "max-w-[85%] md:max-w-[75%] bg-black/50 backdrop-blur-sm border border-white/10 text-white self-start"
+                  ? "max-w-[75%] md:max-w-[60%] bg-white text-black self-end shadow-lg"
+                  : "max-w-[85%] md:max-w-[75%] bg-black/30 backdrop-blur-md text-white self-start"
               } break-words`}
+              whileHover={{ scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-              <div className="prose prose-invert max-w-none">
+              {msg.sender === "ai" && (
+                <>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-blue-500/10"
+                    animate={{
+                      opacity: [0.3, 0.5, 0.3],
+                      scale: [1, 1.02, 1],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                  <motion.div
+                    className="absolute inset-0 backdrop-blur-[8px]"
+                    animate={{
+                      opacity: [0.7, 0.9, 0.7],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                  <motion.div
+                    className="absolute inset-0 border border-white/20 rounded-xl"
+                    animate={{
+                      opacity: [0.2, 0.4, 0.2],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                </>
+              )}
+              <div className="prose prose-invert max-w-none relative z-10">
                 <div className="space-y-4">
                   {msg.type === "diagram" && msg.diagramData ? (
                     <>
