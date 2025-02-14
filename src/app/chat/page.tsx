@@ -4,7 +4,11 @@ import type React from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/app/lib/store";
-import { addMessage, resetChat } from "@/app/lib/messages/messageSlice";
+import {
+  addMessage,
+  resetChat,
+  setDeepSearch,
+} from "@/app/lib/messages/messageSlice";
 import MessageList from "@/components/chat-page/MessageList";
 import GradualSpacing from "@/components/ui/gradual-spacing";
 import type { Message } from "@/app/lib/messages/messageSlice";
@@ -38,17 +42,23 @@ interface DiagramResponse {
 const ChatPage: React.FC = () => {
   const dispatch = useDispatch();
   const messages = useSelector((state: RootState) => state.chat.messages);
+  const isDeepSearch = useSelector(
+    (state: RootState) => state.chat.isDeepSearch
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [sessionId] = useState<string>(uuidv4());
   const [inputValue, setInputValue] = useState<string>("");
-  const firstRow = reviews.slice(0, reviews.length / 2);
-  const secondRow = reviews.slice(reviews.length / 2);
-  const [isDeepSearch, setIsDeepSearch] = useState<boolean>(false);
+
+  // Remove the local state
+  // const [isDeepSearch, setIsDeepSearch] = useState<boolean>(false);
 
   const handleSwitchChange = (checked: boolean) => {
-    setIsDeepSearch(checked);
-    console.log("Deep search state changed:", checked); // Add this log
+    dispatch(setDeepSearch(checked));
+    console.log("Deep search state changed:", checked);
   };
+
+  const firstRow = reviews.slice(0, reviews.length / 2);
+  const secondRow = reviews.slice(reviews.length / 2);
 
   const placeholders = [
     "/diagram Create a flowchart for user registration",
@@ -111,11 +121,13 @@ const ChatPage: React.FC = () => {
     const messageContent = text.trim();
     const isDiagram = isDiagramRequest(messageContent);
 
+    // Reset deep search after sending message
+    dispatch(setDeepSearch(false));
+
     console.log("Request configuration:", {
-      // Add this log
       messageContent,
       isDiagram,
-      isDeepSearch, // Log the deep search state
+      isDeepSearch,
       sessionId,
     });
 
@@ -244,7 +256,7 @@ const ChatPage: React.FC = () => {
               placeholders={placeholders}
               onChange={handleInputChange}
               onSubmit={handleFormSubmit}
-              onSwitchChange={handleSwitchChange} // Add this line
+              onSwitchChange={handleSwitchChange}
             />
           </div>
         </main>

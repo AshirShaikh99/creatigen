@@ -12,21 +12,20 @@ export interface Message {
 
 interface ChatState {
   messages: Message[];
-  ongoingMessage: Partial<Message> | null; // For accumulating chunks
+  isDeepSearch: boolean;
 }
 
 const initialState: ChatState = {
   messages: [],
-  ongoingMessage: null,
+  isDeepSearch: false,
 };
 
-const chatSlice = createSlice({
+export const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
     resetChat: (state) => {
       state.messages = [];
-      state.ongoingMessage = null; // Reset ongoing message
     },
     addMessage: (state, action: PayloadAction<Message>) => {
       const message = {
@@ -50,8 +49,11 @@ const chatSlice = createSlice({
         message.reaction = reaction; // Set the reaction
       }
     },
+    setDeepSearch: (state, action: PayloadAction<boolean>) => {
+      state.isDeepSearch = action.payload;
+    },
   },
 });
 
-export const { resetChat, addMessage, setReaction } = chatSlice.actions;
+export const { addMessage, resetChat, setDeepSearch } = chatSlice.actions;
 export default chatSlice.reducer;
