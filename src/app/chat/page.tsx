@@ -43,6 +43,12 @@ const ChatPage: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const firstRow = reviews.slice(0, reviews.length / 2);
   const secondRow = reviews.slice(reviews.length / 2);
+  const [isDeepSearch, setIsDeepSearch] = useState<boolean>(false);
+
+  const handleSwitchChange = (checked: boolean) => {
+    setIsDeepSearch(checked);
+    console.log("Deep search state changed:", checked); // Add this log
+  };
 
   const placeholders = [
     "/diagram Create a flowchart for user registration",
@@ -105,6 +111,14 @@ const ChatPage: React.FC = () => {
     const messageContent = text.trim();
     const isDiagram = isDiagramRequest(messageContent);
 
+    console.log("Request configuration:", {
+      // Add this log
+      messageContent,
+      isDiagram,
+      isDeepSearch, // Log the deep search state
+      sessionId,
+    });
+
     console.log("Message type detection:", {
       originalText: messageContent,
       isDiagram: isDiagram,
@@ -144,6 +158,7 @@ const ChatPage: React.FC = () => {
             ? `/diagram ${messageContent}` // Add /diagram prefix if it's missing
             : messageContent,
         session_id: sessionId,
+        deep_research: isDeepSearch,
       };
 
       const response = await axios.post(endpoint, requestData, {
@@ -229,6 +244,7 @@ const ChatPage: React.FC = () => {
               placeholders={placeholders}
               onChange={handleInputChange}
               onSubmit={handleFormSubmit}
+              onSwitchChange={handleSwitchChange} // Add this line
             />
           </div>
         </main>
@@ -264,6 +280,7 @@ const ChatPage: React.FC = () => {
                 placeholders={placeholders}
                 onChange={handleInputChange}
                 onSubmit={handleFormSubmit}
+                onSwitchChange={handleSwitchChange}
               />
             </div>
           </div>

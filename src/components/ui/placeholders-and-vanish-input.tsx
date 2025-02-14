@@ -3,15 +3,24 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function PlaceholdersAndVanishInput({
   placeholders,
   onChange,
   onSubmit,
+  onSwitchChange, // Add this prop
 }: {
   placeholders: string[];
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  onSwitchChange?: (checked: boolean) => void; // Add this type
 }) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
 
@@ -242,6 +251,23 @@ export function PlaceholdersAndVanishInput({
           <path d="M13 6l6 6" />
         </motion.svg>
       </button>
+
+      <div className="absolute right-12 top-1/2 -translate-y-1/2 z-[60]">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative bg-transparent">
+                <Switch
+                  onCheckedChange={(checked) => onSwitchChange?.(checked)}
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Creative Search</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
 
       <div className="absolute inset-0 flex items-center rounded-full pointer-events-none">
         <AnimatePresence mode="wait">
