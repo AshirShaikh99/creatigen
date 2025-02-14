@@ -101,7 +101,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
   };
 
   return (
-    <div className="space-y-4 overflow-x-hidden">
+    <div className="space-y-4 overflow-x-hidden px-4">
       <AnimatePresence>
         {messages.map((msg) => (
           <motion.div
@@ -115,13 +115,94 @@ const MessageList: React.FC<MessageListProps> = ({ messages, loading }) => {
             } items-start`}
           >
             <motion.div
-              className={`p-3 rounded-xl ${
+              className={`p-4 rounded-xl ${
                 msg.sender === "user"
                   ? "max-w-[75%] md:max-w-[60%] bg-white text-black self-end"
                   : "max-w-[85%] md:max-w-[75%] bg-black/50 backdrop-blur-sm border border-white/10 text-white self-start"
               } break-words`}
             >
-              {renderContent(msg)}
+              <div className="prose prose-invert max-w-none">
+                <div className="space-y-4">
+                  {msg.type === "diagram" && msg.diagramData ? (
+                    <>
+                      {msg.text && (
+                        <div className="text-base leading-relaxed">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {msg.text}
+                          </ReactMarkdown>
+                        </div>
+                      )}
+                      <div className="bg-white/10 p-4 rounded-lg overflow-x-auto">
+                        <pre className="mermaid">{msg.diagramData}</pre>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-base leading-relaxed">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          p: ({ children }) => (
+                            <p className="mb-4 last:mb-0">{children}</p>
+                          ),
+                          h1: ({ children }) => (
+                            <h1 className="text-2xl font-bold mb-4">
+                              {children}
+                            </h1>
+                          ),
+                          h2: ({ children }) => (
+                            <h2 className="text-xl font-bold mb-3">
+                              {children}
+                            </h2>
+                          ),
+                          ul: ({ children }) => (
+                            <ul className="list-disc pl-6 mb-4 space-y-2">
+                              {children}
+                            </ul>
+                          ),
+                          li: ({ children }) => (
+                            <li className="leading-normal">{children}</li>
+                          ),
+                          code({
+                            inline,
+                            className,
+                            children,
+                            ...props
+                          }: CodeProps) {
+                            const match = /language-(\w+)/.exec(
+                              className || ""
+                            );
+                            if (inline) {
+                              return (
+                                <code className={className} {...props}>
+                                  {children}
+                                </code>
+                              );
+                            } else if (match) {
+                              return (
+                                <SyntaxHighlighter
+                                  style={docco}
+                                  language={match[1]}
+                                  PreTag="div"
+                                  {...props}
+                                >
+                                  {String(children).replace(/\n$/, "")}
+                                </SyntaxHighlighter>
+                              );
+                            }
+                            return (
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            );
+                          },
+                        }}
+                      >
+                        {msg.text}
+                      </ReactMarkdown>
+                    </div>
+                  )}
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         ))}
