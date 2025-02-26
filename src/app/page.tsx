@@ -7,9 +7,13 @@ import Dashboard from "@/components/Dashboard";
 export default function Home() {
   const [isSignedIn, setIsSignedIn] = useState(false);
 
-  if (isSignedIn) {
-    return <Dashboard />;
-  }
+  const handleSignIn = () => {
+    setIsSignedIn(true);
+  };
 
-  return <MainLandingPage onSignIn={() => setIsSignedIn(true)} />;
+  return isSignedIn ? (
+    <Dashboard />
+  ) : (
+    <MainLandingPage onSignIn={handleSignIn} />
+  );
 }

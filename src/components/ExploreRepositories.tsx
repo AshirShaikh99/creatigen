@@ -4,120 +4,65 @@ import type React from "react";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { motion, AnimatePresence } from "framer-motion";
-
-// Mock data for repositories
-const mockRepositories = [
-  {
-    id: 1,
-    name: "Project Ideas",
-    description: "Collection of innovative project ideas",
-  },
-  {
-    id: 2,
-    name: "Research Papers",
-    description: "Academic research and papers",
-  },
-  {
-    id: 3,
-    name: "Design Inspirations",
-    description: "UI/UX design concepts and inspirations",
-  },
-  // Add more mock repositories as needed
-];
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { GitBranch, Search } from "lucide-react";
 
 export function ExploreRepositoriesDialog({
   children,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) {
-  const [searchTerm, setSearchTerm] = useState("");
   const [open, setOpen] = useState(false);
 
-  const filteredRepositories = mockRepositories.filter(
-    (repo) =>
-      repo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      repo.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent className="max-w-4xl bg-[#0F0522] border border-purple-500/20 text-white">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="text-2xl font-bold text-white">
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        {children || (
+          <Button className="bg-purple-600 hover:bg-purple-700">
+            <GitBranch className="mr-2 h-4 w-4" />
             Explore Repositories
-          </AlertDialogTitle>
-          <AlertDialogDescription className="text-gray-400">
-            Browse and search through your knowledge bases
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <div className="mt-4 space-y-4">
+          </Button>
+        )}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md border border-purple-500/20 bg-[#0F0522]/90 backdrop-blur-xl text-white">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold flex items-center gap-2">
+            <GitBranch className="h-5 w-5 text-purple-400" />
+            Explore Repositories
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-6 py-4">
           <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
-              type="text"
               placeholder="Search repositories..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-white/5 border-purple-500/20 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
-            />
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={20}
+              className="bg-white/5 border-purple-500/20 text-white pl-10 placeholder:text-gray-500"
             />
           </div>
-          <AnimatePresence>
-            {filteredRepositories.map((repo) => (
-              <motion.div
-                key={repo.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-                className="bg-white/5 p-4 rounded-lg border border-purple-500/20"
-              >
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  {repo.name}
-                </h3>
-                <p className="text-gray-400 mb-4">{repo.description}</p>
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 hover:text-purple-200 border-purple-500/20"
-                  >
-                    View
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 hover:text-purple-200 border-purple-500/20"
-                  >
-                    Chat
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 hover:text-purple-200 border-purple-500/20"
-                  >
-                    Get Advice
-                  </Button>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-400">No repositories found</p>
+            <p className="text-sm text-gray-400">
+              Create your first knowledge base to get started
+            </p>
+          </div>
         </div>
-      </AlertDialogContent>
-    </AlertDialog>
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            onClick={() => setOpen(false)}
+            className="border-purple-500/20 text-gray-300 hover:bg-purple-500/10 hover:text-white"
+          >
+            Close
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

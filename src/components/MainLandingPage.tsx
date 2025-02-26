@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { GlowEffect } from "@/components/ui/glow-effect";
 import { FloatingParticles } from "@/components/ui/floating-particles";
+import { GlassCard } from "@/components/ui/glass-card";
 import {
   Brain,
   ArrowRight,
@@ -10,6 +11,7 @@ import {
   Zap,
   MessageSquare,
   GitBranch,
+  ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,7 +22,6 @@ interface MainLandingPageProps {
 
 export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
   const handleSignIn = () => {
-    // In a real application, you would implement actual authentication here
     onSignIn();
   };
 
@@ -35,7 +36,7 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
           <Link className="flex items-center gap-2" href="#">
             <Brain className="h-8 w-8 text-purple-500" />
             <span className="text-2xl font-bold bg-gradient-to-r from-white to-purple-500 bg-clip-text text-transparent">
-              Creatigen
+              Dimension
             </span>
           </Link>
           <nav className="hidden md:flex gap-8">
@@ -80,35 +81,33 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
       <section className="pt-32 pb-16 relative">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-purple-400 to-purple-600 bg-clip-text text-transparent">
-            One Knowledge Base For
+            The delightfully smart
             <br />
-            All Your Creative Ideas
+            collaboration platform.
           </h1>
           <p className="text-gray-400 text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-            AI-powered knowledge management platform that helps you organize,
-            connect, and enhance your creative ideas with advanced tools and
-            insights.
+            Connect your team, tools, and knowledge in one unified workspace
+            powered by AI.
           </p>
           <div className="flex gap-4 justify-center mb-16">
-            <Button size="lg" className="bg-purple-600 hover:bg-purple-700">
-              Start Free Trial
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button size="lg" variant="outline" className="border-purple-700">
-              Watch Demo
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-purple-600 to-purple-800 hover:opacity-90 border border-purple-500/20"
+            >
+              Join waitlist
+              <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
           <div className="relative mx-auto max-w-5xl">
-            <div className="relative rounded-xl overflow-hidden border border-purple-500/20 shadow-2xl shadow-purple-500/10">
+            <GlassCard className="overflow-hidden">
               <Image
-                src="/placeholder.svg?height=600&width=1200"
+                src="/dashboard-preview.png"
                 width={1200}
                 height={600}
-                alt="Creatigen Dashboard"
-                className="w-full"
+                alt="Dimension Dashboard"
+                className="w-full rounded-lg"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-            </div>
+            </GlassCard>
           </div>
         </div>
       </section>
@@ -117,20 +116,21 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
       <section className="py-24 relative">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
-            Powerful Features for Creative Minds
+            Powerful Features for Creative Teams
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature) => (
-              <div
+              <GlassCard
                 key={feature.title}
-                className="p-6 rounded-xl bg-white/5 border border-purple-500/20 backdrop-blur-sm hover:border-purple-500/40 transition-all duration-300"
+                className="p-6 hover:border-purple-500/40 transition-all duration-300"
+                glowColor={feature.glowColor}
               >
                 <feature.icon className="h-10 w-10 text-purple-500 mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-2">
                   {feature.title}
                 </h3>
                 <p className="text-gray-400">{feature.description}</p>
-              </div>
+              </GlassCard>
             ))}
           </div>
         </div>
@@ -145,9 +145,10 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
           <div className="relative mx-auto max-w-4xl">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
               {integrations.map((integration, index) => (
-                <div
+                <GlassCard
                   key={index}
-                  className="p-6 rounded-xl bg-white/5 border border-purple-500/20 backdrop-blur-sm"
+                  className="p-6"
+                  glowColor={integration.glowColor}
                 >
                   <div className="h-12 w-12 mx-auto mb-4 rounded-full bg-purple-500/20 flex items-center justify-center">
                     <integration.icon className="h-6 w-6 text-purple-500" />
@@ -158,10 +159,9 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
                   <p className="text-sm text-gray-400">
                     {integration.description}
                   </p>
-                </div>
+                </GlassCard>
               ))}
             </div>
-            <div className="absolute inset-0 -z-10 bg-gradient-radial from-purple-500/20 via-transparent to-transparent blur-3xl" />
           </div>
         </div>
       </section>
@@ -169,23 +169,23 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
       {/* CTA Section */}
       <section className="py-24 relative">
         <div className="container mx-auto px-4 text-center">
-          <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-purple-900/50 to-purple-600/50 border border-purple-500/20 p-12">
+          <GlassCard className="p-12" glowColor="purple">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
-              Ready to Transform Your Creative Process?
+              Ready to Transform Your Collaboration?
             </h2>
             <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join thousands of creators who are already using Creatigen to
-              organize and enhance their ideas.
+              Join thousands of teams who are already using Dimension to
+              organize and enhance their workflow.
             </p>
             <Button
               size="lg"
               className="bg-white text-purple-900 hover:bg-gray-100"
+              onClick={handleSignIn}
             >
               Get Started Now
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-            <div className="absolute inset-0 -z-10 bg-gradient-radial from-purple-500/20 via-transparent to-transparent blur-3xl" />
-          </div>
+          </GlassCard>
         </div>
       </section>
 
@@ -277,10 +277,10 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
           <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Brain className="h-6 w-6 text-purple-500" />
-              <span className="text-white font-semibold">Creatigen</span>
+              <span className="text-white font-semibold">Dimension</span>
             </div>
             <p className="text-gray-400 text-sm">
-              © 2024 Creatigen. All rights reserved.
+              © {new Date().getFullYear()} Dimension. All rights reserved.
             </p>
           </div>
         </div>
@@ -295,36 +295,42 @@ const features = [
     title: "AI-Powered Insights",
     description:
       "Get intelligent suggestions and connections between your ideas using advanced AI algorithms.",
+    glowColor: "purple",
   },
   {
     icon: Brain,
     title: "Knowledge Organization",
     description:
       "Organize your thoughts, documents, and research in a structured and searchable format.",
+    glowColor: "blue",
   },
   {
     icon: MessageSquare,
     title: "Interactive Chat",
     description:
       "Chat with your knowledge base using natural language to discover insights and connections.",
+    glowColor: "pink",
   },
   {
     icon: GitBranch,
     title: "Visual Diagrams",
     description:
       "Create and share beautiful diagrams to visualize your ideas and processes.",
+    glowColor: "purple",
   },
   {
     icon: Zap,
     title: "Quick Actions",
     description:
       "Streamline your workflow with powerful shortcuts and automation tools.",
+    glowColor: "blue",
   },
   {
     icon: Brain,
     title: "Smart Search",
     description:
       "Find exactly what you need with context-aware search powered by AI.",
+    glowColor: "pink",
   },
 ];
 
@@ -334,15 +340,18 @@ const integrations = [
     title: "AI Assistant",
     description:
       "Get intelligent suggestions and insights from your knowledge base.",
+    glowColor: "purple",
   },
   {
     icon: GitBranch,
     title: "Version Control",
     description: "Track changes and collaborate with team members seamlessly.",
+    glowColor: "blue",
   },
   {
     icon: MessageSquare,
     title: "Chat Interface",
     description: "Natural language interaction with your knowledge base.",
+    glowColor: "pink",
   },
 ];
