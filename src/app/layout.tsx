@@ -1,42 +1,26 @@
+import type React from "react";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { Poppins } from "next/font/google";
-import { Providers } from "@/app/providers";
-import { Toaster } from "react-hot-toast";
 
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: "400",
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Creatigen",
-  description: "Be Creative",
+  title: "Creatigen Knowledge Base",
+  description: "Store, organize, and refine your creative ideas",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" data-theme="dark">
-      {/* Added viewport meta tag */}
-      <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
-        />
-      </head>
-      <body className={`${poppins.className} antialiased`}>
-        {/* Ensuring container with safe overflow */}
-        <div className="min-h-screen flex flex-col overflow-hidden">
-          <Providers>
-            {children}
-            {/* Adding Toaster here to enable toast notifications */}
-            <Toaster position="top-right" />
-          </Providers>
-        </div>
+    <html lang="en" className="dark">
+      <body
+        className={`${inter.className} min-h-screen bg-background text-foreground antialiased`}
+      >
+        {children}
       </body>
     </html>
   );
