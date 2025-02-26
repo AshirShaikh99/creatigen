@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { GlowEffect } from "@/components/ui/glow-effect";
 import { FloatingParticles } from "@/components/ui/floating-particles";
@@ -12,7 +14,16 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
-export function MainLandingPage() {
+interface MainLandingPageProps {
+  onSignIn: () => void;
+}
+
+export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
+  const handleSignIn = () => {
+    // In a real application, you would implement actual authentication here
+    onSignIn();
+  };
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#0A0118]">
       <FloatingParticles />
@@ -48,10 +59,17 @@ export function MainLandingPage() {
             </Link>
           </nav>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" className="text-gray-400 hover:text-white">
+            <Button
+              variant="ghost"
+              className="text-gray-400 hover:text-white"
+              onClick={handleSignIn}
+            >
               Sign In
             </Button>
-            <Button className="bg-purple-600 hover:bg-purple-700">
+            <Button
+              className="bg-purple-600 hover:bg-purple-700"
+              onClick={handleSignIn}
+            >
               Get Started
             </Button>
           </div>

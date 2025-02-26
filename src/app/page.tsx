@@ -1,18 +1,15 @@
-import { MainLandingPage } from "@/components/MainLandingPage";
-import { DashboardFeatures } from "@/components/DashboardFeatures";
+"use client";
 
-// This is a mock function. In a real app, you'd use your authentication system.
-const isUserSignedIn = () => {
-  // Replace this with actual auth check
-  return false;
-};
+import { useState } from "react";
+import { MainLandingPage } from "@/components/MainLandingPage";
+import { Dashboard } from "@/components/Dashboard";
 
 export default function Home() {
-  const userSignedIn = isUserSignedIn();
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-black to-gray-900">
-      {userSignedIn ? <DashboardFeatures /> : <MainLandingPage />}
-    </div>
-  );
+  if (isSignedIn) {
+    return <Dashboard />;
+  }
+
+  return <MainLandingPage onSignIn={() => setIsSignedIn(true)} />;
 }

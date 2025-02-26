@@ -36,10 +36,12 @@ export function FloatingParticles() {
     }
 
     function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (canvas && ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
 
       particles.forEach((particle) => {
-        ctx.beginPath();
+        if (ctx) ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(147, 51, 234, ${particle.opacity})`;
         ctx.fill();
@@ -68,7 +70,7 @@ export function FloatingParticles() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 -z-10 pointer-events-none opacity-60"
+      className="fixed inset-0 -z-10 pointer-events-none opacity-70 bg-transparent"
     />
   );
 }
