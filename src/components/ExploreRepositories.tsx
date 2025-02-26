@@ -25,16 +25,16 @@ export function ExploreRepositoriesDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {children || (
-          <Button className="bg-purple-600 hover:bg-purple-700">
+          <Button className="bg-amber-600 hover:bg-amber-700">
             <GitBranch className="mr-2 h-4 w-4" />
             Explore Repositories
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md border border-purple-500/20 bg-[#0F0522]/90 backdrop-blur-xl text-white">
+      <DialogContent className="sm:max-w-md border border-amber-500/20 bg-[#0F0A05]/90 backdrop-blur-xl text-white">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <GitBranch className="h-5 w-5 text-purple-400" />
+            <GitBranch className="h-5 w-5 text-amber-400" />
             Explore Repositories
           </DialogTitle>
         </DialogHeader>
@@ -43,7 +43,7 @@ export function ExploreRepositoriesDialog({
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Search repositories..."
-              className="bg-white/5 border-purple-500/20 text-white pl-10 placeholder:text-gray-500"
+              className="bg-white/5 border-amber-500/20 text-white pl-10 placeholder:text-gray-500"
             />
           </div>
           <div className="space-y-2">
@@ -57,7 +57,7 @@ export function ExploreRepositoriesDialog({
           <Button
             variant="outline"
             onClick={() => setOpen(false)}
-            className="border-purple-500/20 text-gray-300 hover:bg-purple-500/10 hover:text-white"
+            className="border-amber-500/20 text-gray-300 hover:bg-amber-500/10 hover:text-white"
           >
             Close
           </Button>

@@ -76,13 +76,13 @@ export default function Dashboard() {
   if (!mounted) return null;
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-[#0A0118] to-[#1A0B30]">
+    <div className="flex min-h-screen bg-gradient-to-br from-[#0A0500] to-[#1A0B00]">
       <GlowEffect />
 
       {/* Mobile sidebar toggle */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-full bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 transition-all duration-300"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-full bg-amber-600/20 text-amber-400 hover:bg-amber-600/30 transition-all duration-300"
       >
         {isSidebarOpen ? (
           <X className="h-5 w-5" />
@@ -93,7 +93,7 @@ export default function Dashboard() {
 
       {/* Sidebar */}
       <motion.div
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0F0522] border-r border-purple-500/20 transform lg:translate-x-0 transition-all duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0F0500] border-r border-amber-500/20 transform lg:translate-x-0 transition-all duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:relative`}
         initial={{ x: -100, opacity: 0 }}
@@ -102,19 +102,19 @@ export default function Dashboard() {
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="border-b border-purple-500/20 p-4">
+          <div className="border-b border-amber-500/20 p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-600 to-fuchsia-500 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 to-yellow-500 flex items-center justify-center">
                 <Brain className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-fuchsia-500 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
                 Dimension
               </span>
             </div>
           </div>
 
           {/* Project Info */}
-          <div className="border-b border-purple-500/20 p-4">
+          <div className="border-b border-amber-500/20 p-4">
             <div className="flex flex-col">
               <h2 className="text-lg font-bold text-white">
                 Dimension Project
@@ -135,8 +135,8 @@ export default function Dashboard() {
                 >
                   {feature.component ? (
                     <feature.component>
-                      <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-purple-500/10 transition-all duration-200 group cursor-pointer">
-                        <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:bg-purple-500/20 transition-all duration-200">
+                      <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-amber-500/10 transition-all duration-200 group cursor-pointer">
+                        <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:bg-amber-500/20 transition-all duration-200">
                           <feature.icon className="h-4 w-4" />
                         </div>
                         <span>{feature.title}</span>
@@ -145,8 +145,8 @@ export default function Dashboard() {
                     </feature.component>
                   ) : (
                     <Link href={feature.href || "#"}>
-                      <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-purple-500/10 transition-all duration-200 group">
-                        <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:bg-purple-500/20 transition-all duration-200">
+                      <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-amber-500/10 transition-all duration-200 group">
+                        <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:bg-amber-500/20 transition-all duration-200">
                           <feature.icon className="h-4 w-4" />
                         </div>
                         <span>{feature.title}</span>
@@ -160,14 +160,14 @@ export default function Dashboard() {
           </div>
 
           {/* Team Members */}
-          <div className="border-t border-purple-500/20 p-4">
+          <div className="border-t border-amber-500/20 p-4">
             <h3 className="text-sm font-medium text-gray-400 mb-3">
               Team Members
             </h3>
             <div className="space-y-2">
               {["Tejas", "Ari", "Landon"].map((member, index) => (
                 <div key={member} className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center text-white text-xs font-medium">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center text-white text-xs font-medium">
                     {member.charAt(0)}
                   </div>
                   <span className="text-gray-300">{member}</span>
@@ -177,10 +177,10 @@ export default function Dashboard() {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-purple-500/20 p-4">
+          <div className="border-t border-amber-500/20 p-4">
             <Button
               variant="ghost"
-              className="w-full text-gray-400 hover:text-white hover:bg-purple-500/10 justify-start gap-3"
+              className="w-full text-gray-400 hover:text-white hover:bg-amber-500/10 justify-start gap-3"
             >
               <LogOut className="h-4 w-4" />
               <span>Sign Out</span>
@@ -213,7 +213,7 @@ export default function Dashboard() {
           >
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
               Welcome to Your{" "}
-              <span className="bg-gradient-to-r from-purple-400 to-fuchsia-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent">
                 Knowledge Base
               </span>
             </h1>
@@ -226,7 +226,7 @@ export default function Dashboard() {
           <GlassCard className="p-6">
             <div className="space-y-6">
               <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center text-white text-xs font-medium">
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center text-white text-xs font-medium">
                   T
                 </div>
                 <div className="flex-1">
@@ -245,7 +245,7 @@ export default function Dashboard() {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-500 to-fuchsia-600 flex items-center justify-center text-white text-xs font-medium">
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center text-white text-xs font-medium">
                   A
                 </div>
                 <div className="flex-1">
@@ -257,10 +257,10 @@ export default function Dashboard() {
                     There are a few items on the tasklist that needs to be
                     addressed on iOS.
                   </p>
-                  <div className="mt-3 rounded-lg border border-purple-500/20 bg-black/20 p-4">
+                  <div className="mt-3 rounded-lg border border-amber-500/20 bg-black/20 p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <GitBranch className="h-4 w-4 text-purple-400" />
+                        <GitBranch className="h-4 w-4 text-amber-400" />
                         <span className="text-sm font-medium text-white">
                           GitHub Pull Request
                         </span>
@@ -287,19 +287,19 @@ export default function Dashboard() {
                 icon: Database,
                 title: "Total Knowledge Bases",
                 value: 3,
-                color: "from-purple-500 to-indigo-600",
+                color: "from-amber-500 to-yellow-600",
               },
               {
                 icon: Activity,
                 title: "Recent Activities",
                 value: 24,
-                color: "from-fuchsia-500 to-pink-600",
+                color: "from-yellow-600 to-amber-700",
               },
               {
                 icon: MessageSquare,
                 title: "AI Interactions",
                 value: 128,
-                color: "from-blue-500 to-cyan-600",
+                color: "from-amber-700 to-yellow-800",
               },
             ].map((stat, index) => (
               <motion.div
@@ -344,7 +344,7 @@ export default function Dashboard() {
           {/* Quick Actions */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-              <span className="h-8 w-1 bg-gradient-to-b from-purple-500 to-fuchsia-500 rounded-full"></span>
+              <span className="h-8 w-1 bg-gradient-to-b from-amber-500 to-yellow-500 rounded-full"></span>
               Quick Actions
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -357,7 +357,7 @@ export default function Dashboard() {
                 <GlassCard className="h-32 group">
                   <CreateKnowledgeBaseDialog>
                     <div className="flex flex-col items-center justify-center h-full gap-3 p-4 cursor-pointer">
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-amber-600 to-yellow-700 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <Plus className="h-6 w-6 text-white" />
                       </div>
                       <span className="text-white font-medium text-center">
@@ -374,10 +374,10 @@ export default function Dashboard() {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
               >
-                <GlassCard className="h-32 group" glowColor="pink">
+                <GlassCard className="h-32 group" glowColor="gold">
                   <Link href="/?page=chat" className="block h-full">
                     <div className="flex flex-col items-center justify-center h-full gap-3 p-4">
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-fuchsia-600 to-pink-700 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-yellow-600 to-amber-700 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <Brain className="h-6 w-6 text-white" />
                       </div>
                       <span className="text-white font-medium text-center">
@@ -393,7 +393,7 @@ export default function Dashboard() {
           {/* Tasks Section */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-              <span className="h-8 w-1 bg-gradient-to-b from-purple-500 to-fuchsia-500 rounded-full"></span>
+              <span className="h-8 w-1 bg-gradient-to-b from-amber-500 to-yellow-500 rounded-full"></span>
               Tasks
             </h2>
             <GlassCard>
@@ -409,7 +409,7 @@ export default function Dashboard() {
                     <div
                       className={`h-5 w-5 rounded border ${
                         task.completed
-                          ? "bg-purple-500 border-purple-600"
+                          ? "bg-amber-500 border-amber-600"
                           : "border-gray-600"
                       } flex items-center justify-center`}
                     >

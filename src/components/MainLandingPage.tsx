@@ -26,7 +26,7 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0A0118]">
+    <div className="relative min-h-screen overflow-hidden bg-[#0A0500]">
       <FloatingParticles />
       <GlowEffect />
 
@@ -34,8 +34,8 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-black/20 backdrop-blur-xl">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link className="flex items-center gap-2" href="#">
-            <Brain className="h-8 w-8 text-purple-500" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-white to-purple-500 bg-clip-text text-transparent">
+            <Brain className="h-8 w-8 text-amber-500" />
+            <span className="text-2xl font-bold bg-gradient-to-r from-white to-amber-500 bg-clip-text text-transparent">
               Dimension
             </span>
           </Link>
@@ -68,7 +68,7 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
               Sign In
             </Button>
             <Button
-              className="bg-purple-600 hover:bg-purple-700"
+              className="bg-amber-600 hover:bg-amber-700"
               onClick={handleSignIn}
             >
               Get Started
@@ -80,7 +80,7 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
       {/* Hero Section */}
       <section className="pt-32 pb-16 relative">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-purple-400 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-amber-400 to-amber-600 bg-clip-text text-transparent">
             The delightfully smart
             <br />
             collaboration platform.
@@ -92,7 +92,7 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
           <div className="flex gap-4 justify-center mb-16">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-purple-600 to-purple-800 hover:opacity-90 border border-purple-500/20"
+              className="bg-gradient-to-r from-amber-600 to-amber-800 hover:opacity-90 border border-amber-500/20"
             >
               Join waitlist
               <ChevronRight className="ml-2 h-4 w-4" />
@@ -100,13 +100,16 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
           </div>
           <div className="relative mx-auto max-w-5xl">
             <GlassCard className="overflow-hidden">
-              <Image
-                src="/dashboard-preview.png"
-                width={1200}
-                height={600}
-                alt="Dimension Dashboard"
-                className="w-full rounded-lg"
-              />
+              <div className="relative">
+                <Image
+                  src=""
+                  width={1200}
+                  height={600}
+                  alt="Dimension Dashboard"
+                  className="w-full rounded-lg"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              </div>
             </GlassCard>
           </div>
         </div>
@@ -122,10 +125,10 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
             {features.map((feature) => (
               <GlassCard
                 key={feature.title}
-                className="p-6 hover:border-purple-500/40 transition-all duration-300"
+                className="p-6 hover:border-amber-500/40 transition-all duration-300"
                 glowColor={feature.glowColor}
               >
-                <feature.icon className="h-10 w-10 text-purple-500 mb-4" />
+                <feature.icon className="h-10 w-10 text-amber-500 mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-2">
                   {feature.title}
                 </h3>
@@ -150,8 +153,8 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
                   className="p-6"
                   glowColor={integration.glowColor}
                 >
-                  <div className="h-12 w-12 mx-auto mb-4 rounded-full bg-purple-500/20 flex items-center justify-center">
-                    <integration.icon className="h-6 w-6 text-purple-500" />
+                  <div className="h-12 w-12 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
+                    <integration.icon className="h-6 w-6 text-amber-500" />
                   </div>
                   <h3 className="text-lg font-semibold text-white mb-2">
                     {integration.title}
@@ -169,7 +172,7 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
       {/* CTA Section */}
       <section className="py-24 relative">
         <div className="container mx-auto px-4 text-center">
-          <GlassCard className="p-12" glowColor="purple">
+          <GlassCard className="p-12" glowColor="amber">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
               Ready to Transform Your Collaboration?
             </h2>
@@ -179,7 +182,7 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
             </p>
             <Button
               size="lg"
-              className="bg-white text-purple-900 hover:bg-gray-100"
+              className="bg-white text-amber-900 hover:bg-gray-100"
               onClick={handleSignIn}
             >
               Get Started Now
@@ -276,7 +279,7 @@ export function MainLandingPage({ onSignIn }: MainLandingPageProps) {
           </div>
           <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Brain className="h-6 w-6 text-purple-500" />
+              <Brain className="h-6 w-6 text-amber-500" />
               <span className="text-white font-semibold">Dimension</span>
             </div>
             <p className="text-gray-400 text-sm">
@@ -295,42 +298,42 @@ const features = [
     title: "AI-Powered Insights",
     description:
       "Get intelligent suggestions and connections between your ideas using advanced AI algorithms.",
-    glowColor: "purple",
+    glowColor: "amber",
   },
   {
     icon: Brain,
     title: "Knowledge Organization",
     description:
       "Organize your thoughts, documents, and research in a structured and searchable format.",
-    glowColor: "blue",
+    glowColor: "gold",
   },
   {
     icon: MessageSquare,
     title: "Interactive Chat",
     description:
       "Chat with your knowledge base using natural language to discover insights and connections.",
-    glowColor: "pink",
+    glowColor: "brown",
   },
   {
     icon: GitBranch,
     title: "Visual Diagrams",
     description:
       "Create and share beautiful diagrams to visualize your ideas and processes.",
-    glowColor: "purple",
+    glowColor: "amber",
   },
   {
     icon: Zap,
     title: "Quick Actions",
     description:
       "Streamline your workflow with powerful shortcuts and automation tools.",
-    glowColor: "blue",
+    glowColor: "gold",
   },
   {
     icon: Brain,
     title: "Smart Search",
     description:
       "Find exactly what you need with context-aware search powered by AI.",
-    glowColor: "pink",
+    glowColor: "brown",
   },
 ];
 
@@ -340,18 +343,18 @@ const integrations = [
     title: "AI Assistant",
     description:
       "Get intelligent suggestions and insights from your knowledge base.",
-    glowColor: "purple",
+    glowColor: "amber",
   },
   {
     icon: GitBranch,
     title: "Version Control",
     description: "Track changes and collaborate with team members seamlessly.",
-    glowColor: "blue",
+    glowColor: "gold",
   },
   {
     icon: MessageSquare,
     title: "Chat Interface",
     description: "Natural language interaction with your knowledge base.",
-    glowColor: "pink",
+    glowColor: "brown",
   },
 ];

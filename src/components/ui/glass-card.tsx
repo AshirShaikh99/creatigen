@@ -10,15 +10,15 @@ interface GlassCardProps {
 export function GlassCard({
   children,
   className,
-  glowColor = "purple",
+  glowColor = "amber",
 }: GlassCardProps) {
   const glowMap = {
-    purple: "before:bg-purple-500/20",
-    blue: "before:bg-blue-500/20",
-    pink: "before:bg-pink-500/20",
+    amber: "before:bg-amber-500/20",
+    gold: "before:bg-yellow-600/20",
+    brown: "before:bg-amber-800/20",
   };
 
-  const glow = glowMap[glowColor as keyof typeof glowMap] || glowMap.purple;
+  const glow = glowMap[glowColor as keyof typeof glowMap] || glowMap.amber;
 
   return (
     <div
