@@ -1,5 +1,5 @@
-import CreateKnowledgeBase from "@/components/CreateKnowledgeBase";
+import { CreateKnowledgeBaseDialog } from "@/components/CreateKnowledgeBase";
 
 export default function CreateKnowledgeBasePage() {
-  return <CreateKnowledgeBase />;
+  return <CreateKnowledgeBaseDialog />;
 }

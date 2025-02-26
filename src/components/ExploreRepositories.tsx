@@ -1,9 +1,20 @@
 "use client";
 
+import type React from "react";
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Mock data for repositories
 const mockRepositories = [
@@ -25,8 +36,13 @@ const mockRepositories = [
   // Add more mock repositories as needed
 ];
 
-export default function ExploreRepositories() {
+export function ExploreRepositoriesDialog({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [open, setOpen] = useState(false);
 
   const filteredRepositories = mockRepositories.filter(
     (repo) =>
@@ -35,44 +51,73 @@ export default function ExploreRepositories() {
   );
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-6 text-white">
-        Explore Repositories
-      </h2>
-      <div className="mb-6 relative">
-        <Input
-          type="text"
-          placeholder="Search repositories..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
-        <Search
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          size={20}
-        />
-      </div>
-      <div className="space-y-4">
-        {filteredRepositories.map((repo) => (
-          <div key={repo.id} className="bg-gray-800 p-4 rounded-lg">
-            <h3 className="text-xl font-semibold text-white mb-2">
-              {repo.name}
-            </h3>
-            <p className="text-gray-400 mb-4">{repo.description}</p>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm">
-                View
-              </Button>
-              <Button variant="outline" size="sm">
-                Chat
-              </Button>
-              <Button variant="outline" size="sm">
-                Get Advice
-              </Button>
-            </div>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      <AlertDialogContent className="max-w-4xl bg-[#0F0522] border border-purple-500/20 text-white">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-2xl font-bold text-white">
+            Explore Repositories
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-gray-400">
+            Browse and search through your knowledge bases
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="mt-4 space-y-4">
+          <div className="relative">
+            <Input
+              type="text"
+              placeholder="Search repositories..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 bg-white/5 border-purple-500/20 text-white placeholder:text-gray-500 focus-visible:ring-purple-500"
+            />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={20}
+            />
           </div>
-        ))}
-      </div>
-    </div>
+          <AnimatePresence>
+            {filteredRepositories.map((repo) => (
+              <motion.div
+                key={repo.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                className="bg-white/5 p-4 rounded-lg border border-purple-500/20"
+              >
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  {repo.name}
+                </h3>
+                <p className="text-gray-400 mb-4">{repo.description}</p>
+                <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 hover:text-purple-200 border-purple-500/20"
+                  >
+                    View
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 hover:text-purple-200 border-purple-500/20"
+                  >
+                    Chat
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 hover:text-purple-200 border-purple-500/20"
+                  >
+                    Get Advice
+                  </Button>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
