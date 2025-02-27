@@ -24,7 +24,7 @@ import { motion } from "framer-motion";
 const features = [
   {
     icon: Brain,
-    title: "Create Knowledge Base",
+    title: "Create Creative Repository",
     description: "Start a new repository",
     href: "/create-knowledge-base",
   },
@@ -71,7 +71,9 @@ export function Dashboard() {
   if (!mounted) return null;
 
   return (
-    <div className="flex min-h-screen bg-gradient-custom">
+    <div className="flex min-h-screen bg-black">
+      {" "}
+      {/* Updated from bg-gradient-custom */}
       {/* Mobile sidebar toggle */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -83,7 +85,6 @@ export function Dashboard() {
           <Menu className="h-5 w-5" />
         )}
       </button>
-
       {/* Sidebar */}
       <motion.div
         className={`fixed inset-y-0 left-0 z-40 w-64 bg-black border-r border-[#C1FF00]/20 transform lg:translate-x-0 transition-all duration-300 ease-in-out ${
@@ -140,7 +141,6 @@ export function Dashboard() {
           </div>
         </div>
       </motion.div>
-
       {/* Backdrop for mobile */}
       {isSidebarOpen && (
         <div
@@ -148,7 +148,6 @@ export function Dashboard() {
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
-
       {/* Main content */}
       <motion.main
         className="flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto"
@@ -166,7 +165,7 @@ export function Dashboard() {
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
               Welcome to Your{" "}
               <span className="bg-gradient-to-r bg-[#C1FF00] bg-clip-text text-transparent">
-                Knowledge Base
+                Creative Space
               </span>
             </h1>
             <p className="text-gray-400">
@@ -203,7 +202,7 @@ export function Dashboard() {
                 transition={{ duration: 0.5, delay: 0.1 * index }}
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
               >
-                <Card className="relative overflow-hidden glass-card">
+                <Card className="relative overflow-hidden bg-[#111111] border-[#222222]">
                   <div
                     className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r opacity-80"
                     style={{
@@ -245,7 +244,7 @@ export function Dashboard() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
               >
-                <Card className="h-32 group glass-card">
+                <Card className="h-32 group glass-card bg-[#111111] border-[#222222]">
                   <Link href="/create-knowledge-base" className="block h-full">
                     <div className="flex flex-col items-center justify-center h-full gap-3 p-4 cursor-pointer">
                       <div className="h-12 w-12 rounded-full  bg-[#C1FF00] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -265,7 +264,7 @@ export function Dashboard() {
                 transition={{ duration: 0.5, delay: 0.3 }}
                 whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
               >
-                <Card className="h-32 group glass-card">
+                <Card className="h-32 group glass-card bg-[#111111] border-[#222222]">
                   <Link href="/chat" className="block h-full">
                     <div className="flex flex-col items-center justify-center h-full gap-3 p-4">
                       <div className="h-12 w-12 rounded-full bg-gradient-to-br bg-[#C1FF00] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
