@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "./SideBar";
 import IdeaList from "./IdeaList";
 import SearchBar from "./SearchBar";
 import AddIdeaButton from "./AddIdeaButton";
