@@ -12,16 +12,21 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { useEffect } from "react";
+import { SignInDialog } from "@/components/ui/sign-in-dialog";
+import { useState } from "react";
 
 export function LandingPage() {
   const router = useRouter();
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
 
   const handleSignIn = () => {
-    router.push("/dashboard");
+    setIsSignInOpen(true);
   };
 
   const handleSignUp = () => {
-    router.push("/dashboard");
+    router.push("/sign-up");
   };
 
   return (
@@ -72,7 +77,12 @@ export function LandingPage() {
         </div>
       </header>
 
-      {/* Main Content */}
+      <SignInDialog
+        isOpen={isSignInOpen}
+        onClose={() => setIsSignInOpen(false)}
+      />
+
+      {/* Main Content - moved outside header */}
       <main className="pt-24 pb-16 px-4">
         <div className="container mx-auto">
           {/* Hero Section */}
@@ -117,7 +127,7 @@ export function LandingPage() {
         </div>
       </main>
 
-      {/* Footer */}
+      {/* Footer - moved outside header */}
       <footer className="py-8 border-t border-[#1A1A1A]">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">

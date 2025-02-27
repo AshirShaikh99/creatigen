@@ -18,7 +18,7 @@ import {
   X,
   Plus,
 } from "lucide-react";
-import Link from "next/link";
+
 import { motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/app/lib/store";
@@ -469,7 +469,7 @@ export function Dashboard() {
           </div>
         ) : (
           // Chat Interface
-          <div className="h-full flex flex-col relative">
+          <div className="h-[calc(100vh-2rem)] flex flex-col relative">
             <DotPattern
               className={cn(
                 "absolute inset-0 w-full h-full opacity-20",
@@ -478,7 +478,7 @@ export function Dashboard() {
             />
 
             <TooltipProvider>
-              <div className="flex justify-between pb-4">
+              <div className="flex justify-between pb-4 sticky top-0 bg-black z-20">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <ShimmerButton
@@ -502,8 +502,8 @@ export function Dashboard() {
               </div>
             </TooltipProvider>
 
-            <div className="flex-1 overflow-y-auto mb-20">
-              <div className="max-w-4xl mx-auto">
+            <div className="flex-1 overflow-y-auto">
+              <div className="max-w-4xl mx-auto px-4">
                 {messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-64 text-center">
                     <Brain className="h-16 w-16 text-[#C1FF00] mb-4" />
@@ -516,13 +516,15 @@ export function Dashboard() {
                     </p>
                   </div>
                 ) : (
-                  <MessageList messages={messages} loading={isLoading} />
+                  <div className="pb-20">
+                    <MessageList messages={messages} loading={isLoading} />
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-80 backdrop-blur-sm py-4 z-10">
-              <div className="max-w-4xl mx-auto px-4 lg:px-0">
+            <div className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm py-4 border-t border-[#C1FF00]/20">
+              <div className="max-w-3xl mx-auto px-4">
                 <PlaceholdersAndVanishInput
                   placeholders={placeholders}
                   onChange={handleInputChange}

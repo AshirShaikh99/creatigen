@@ -11,9 +11,5 @@ export default function Home() {
     setIsSignedIn(true);
   };
 
-  return isSignedIn ? (
-    <Dashboard />
-  ) : (
-    <MainLandingPage onSignIn={handleSignIn} />
-  );
+  return isSignedIn ? <Dashboard /> : <MainLandingPage />;
 }
