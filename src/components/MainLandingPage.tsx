@@ -16,17 +16,20 @@ import { useAuth } from "@clerk/nextjs";
 import { useEffect } from "react";
 import { SignInDialog } from "@/components/ui/sign-in-dialog";
 import { useState } from "react";
+// Add this import
+import { SignUpDialog } from "@/components/ui/sign-up-dialog";
 
 export function LandingPage() {
   const router = useRouter();
   const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 
   const handleSignIn = () => {
     setIsSignInOpen(true);
   };
 
   const handleSignUp = () => {
-    router.push("/sign-up");
+    setIsSignUpOpen(true);
   };
 
   return (
@@ -80,6 +83,11 @@ export function LandingPage() {
       <SignInDialog
         isOpen={isSignInOpen}
         onClose={() => setIsSignInOpen(false)}
+      />
+
+      <SignUpDialog
+        isOpen={isSignUpOpen}
+        onClose={() => setIsSignUpOpen(false)}
       />
 
       {/* Main Content - moved outside header */}
