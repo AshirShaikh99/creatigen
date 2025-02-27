@@ -1,9 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import Link from "next/link";
-import { GridBackground } from "./ui/grid-background";
+import { Card } from "@/components/ui/card";
 import {
   FolderPlus,
   MessageSquare,
@@ -12,17 +10,27 @@ import {
   Cpu,
   Brain,
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export function MainLandingPage() {
+export function LandingPage() {
+  const router = useRouter();
+
+  const handleSignIn = () => {
+    router.push("/dashboard");
+  };
+
+  const handleSignUp = () => {
+    router.push("/dashboard");
+  };
+
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white">
-      <GridBackground />
-
+    <div className="min-h-screen bg-black">
       {/* Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/5">
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#1A1A1A]">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold">Creatigen</span>
+          <Link href="/" className="text-xl font-bold">
+            Creatigen
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
@@ -46,76 +54,71 @@ export function MainLandingPage() {
             </Link>
           </nav>
 
-          <Button className="bg-[#C1FF00] hover:bg-[#B1EF00] text-black font-medium">
-            Join the waitlist
-          </Button>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="pt-32 pb-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tight">
-            Generate anything
-            <br />
-            what's in your mind now.
-          </h1>
-          <Button
-            size="lg"
-            className="bg-[#C1FF00] hover:bg-[#B1EF00] text-black font-medium px-8"
-          >
-            Join the waitlist
-          </Button>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-24 bg-black/50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-            Discover the Power of Creatigen
-          </h2>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature) => (
-              <div
-                key={feature.title}
-                className="p-6 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors"
-              >
-                <div className="w-12 h-12 rounded-xl bg-[#C1FF00]/10 flex items-center justify-center mb-4">
-                  <feature.icon className="w-6 h-6 text-[#C1FF00]" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-400 text-sm">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">
-              Ready to start creating?
-            </h2>
-            <p className="text-gray-400 mb-8">
-              Join thousands of creators who are already using Creatigen to
-              bring their ideas to life.
-            </p>
+          <div className="flex items-center gap-4">
             <Button
-              size="lg"
-              className="bg-[#C1FF00] hover:bg-[#B1EF00] text-black font-medium px-8"
+              variant="outline"
+              className="border-[#C1FF00] text-[#C1FF00] hover:bg-[#C1FF00] hover:text-black"
+              onClick={handleSignIn}
             >
-              Get Started Now
+              Sign In
+            </Button>
+            <Button
+              className="bg-[#C1FF00] hover:bg-[#B1EF00] text-black font-medium"
+              onClick={handleSignUp}
+            >
+              Sign Up
             </Button>
           </div>
         </div>
-      </section>
+      </header>
+
+      {/* Main Content */}
+      <main className="pt-24 pb-16 px-4">
+        <div className="container mx-auto">
+          {/* Hero Section */}
+          <div className="text-center mb-24">
+            <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tight">
+              Generate anything
+              <br />
+              what's in your mind now.
+            </h1>
+            <Button
+              size="lg"
+              className="bg-[#C1FF00] hover:bg-[#B1EF00] text-black font-medium px-8"
+              onClick={handleSignUp}
+            >
+              Join the waitlist
+            </Button>
+          </div>
+
+          {/* Features Grid */}
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-16">
+              Discover the Power of Creatigen
+            </h2>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {features.map((feature) => (
+                <Card
+                  key={feature.title}
+                  className="bg-[#111111] border-[#1A1A1A] p-6 hover:bg-[#161616] transition-colors"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-[#0A0A0A] flex items-center justify-center mb-4">
+                    <feature.icon className="w-6 h-6 text-[#C1FF00]" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-400 text-sm">{feature.description}</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </main>
 
       {/* Footer */}
-      <footer className="py-12 border-t border-white/5">
+      <footer className="py-8 border-t border-[#1A1A1A]">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <span className="font-semibold">Creatigen</span>
@@ -164,9 +167,9 @@ const features = [
   },
   {
     icon: Cpu,
-    title: "Creative Engine",
+    title: "Create Engine",
     description:
-      "Leverage our powerful Creative Engine to bring your ideas to life with AI-assisted content generation.",
+      "Leverage our powerful Create Engine to bring your ideas to life with AI-assisted content generation.",
   },
   {
     icon: Brain,

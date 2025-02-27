@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MainLandingPage } from "@/components/MainLandingPage";
+import { LandingPage as MainLandingPage } from "@/components/MainLandingPage";
 import Dashboard from "@/components/Dashboard";
 
 export default function Home() {
