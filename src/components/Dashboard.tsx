@@ -42,33 +42,17 @@ const features = [
     description: "Start a new repository",
     href: "/create-knowledge-base",
   },
-  {
-    icon: Sparkles,
-    title: "Explore Repositories",
-    description: "Browse knowledge bases",
-    href: "/explore-repositories",
-  },
-  {
-    icon: MessageSquare,
-    title: "Chat with Knowledge Base",
-    description: "Interact with AI",
-    href: "/chat",
-  },
+
   {
     icon: GitBranch,
     title: "Build Diagrams",
     description: "Visualize concepts",
     href: "/diagrams",
   },
-  {
-    icon: FileText,
-    title: "View Documents",
-    description: "Manage files",
-    href: "/documents",
-  },
+
   {
     icon: HelpCircle,
-    title: "Get Interactive Advice",
+    title: "Creative Agent",
     description: "Get insights",
     href: "/advice",
   },
@@ -315,7 +299,7 @@ export function Dashboard() {
                         <Plus className="h-6 w-6 text-black" />
                       </div>
                       <span className="text-white font-medium text-center">
-                        Create Knowledge Base
+                        Create Creative Repository
                       </span>
                     </div>
                   </Card>
@@ -348,7 +332,7 @@ export function Dashboard() {
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                 <span className="h-8 w-1 bg-gradient-to-b from-[#C1FF00] to-[#83c5be] rounded-full"></span>
-                Your Knowledgebases
+                Chat With Creative Space
               </h2>
               <RepositoryList
                 repositories={repositories}
