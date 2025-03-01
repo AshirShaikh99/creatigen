@@ -5,10 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Brain,
-  Sparkles,
   MessageSquare,
   GitBranch,
-  FileText,
   HelpCircle,
   Database,
   Activity,
@@ -21,6 +19,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ChatInterface from "@/components/ChatInterface";
+import DiagramChatInterface from "@/components/DiagramChatInterface";
 import { CreateKnowledgebaseModal } from "@/components/CreateKnowledgeBase";
 import { RepositoryList } from "@/components/ExploreRepositories";
 import { useSelector } from "react-redux";
@@ -42,14 +41,12 @@ const features = [
     description: "Start a new repository",
     href: "/create-knowledge-base",
   },
-
   {
     icon: GitBranch,
     title: "Build Diagrams",
     description: "Visualize concepts",
     href: "/diagrams",
   },
-
   {
     icon: HelpCircle,
     title: "Creative Agent",
@@ -62,6 +59,7 @@ export function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [showDiagramChat, setShowDiagramChat] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedRepository, setSelectedRepository] = useState<string | null>(
     null
@@ -132,15 +130,21 @@ export function Dashboard() {
                     <div
                       className={cn(
                         "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group cursor-pointer",
-                        feature.isActive
+                        feature.isActive ||
+                          (feature.title === "Build Diagrams" &&
+                            showDiagramChat)
                           ? "bg-[#C1FF00]/15 text-white"
                           : "text-gray-400 hover:text-white hover:bg-[#C1FF00]/10"
                       )}
                       onClick={() => {
-                        if (feature.title === "Chat with Knowledge Base") {
-                          setShowChat(true);
+                        if (feature.title === "Build Diagrams") {
+                          setShowDiagramChat(true);
+                          setShowChat(false);
                         } else if (feature.title === "Create Repository") {
                           setIsCreateModalOpen(true);
+                        } else if (feature.title === "Dashboard") {
+                          setShowChat(false);
+                          setShowDiagramChat(false);
                         }
                         // Close sidebar on mobile after selection
                         if (window.innerWidth < 1024) {
@@ -151,7 +155,9 @@ export function Dashboard() {
                       <div
                         className={cn(
                           "h-8 w-8 rounded-lg flex items-center justify-center transition-all duration-200",
-                          feature.isActive
+                          feature.isActive ||
+                            (feature.title === "Build Diagrams" &&
+                              showDiagramChat)
                             ? "bg-[#C1FF00] text-black"
                             : "bg-[#1A1A1A] text-[#C1FF00] group-hover:bg-[#C1FF00]/20"
                         )}
@@ -162,7 +168,9 @@ export function Dashboard() {
                       <ChevronRight
                         className={cn(
                           "h-4 w-4 ml-auto transition-opacity",
-                          feature.isActive
+                          feature.isActive ||
+                            (feature.title === "Build Diagrams" &&
+                              showDiagramChat)
                             ? "opacity-100"
                             : "opacity-0 group-hover:opacity-100"
                         )}
@@ -202,7 +210,7 @@ export function Dashboard() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        {!showChat ? (
+        {!showChat && !showDiagramChat ? (
           <div className="max-w-6xl mx-auto space-y-8">
             {/* Header */}
             <motion.div
@@ -283,7 +291,7 @@ export function Dashboard() {
                 <span className="h-8 w-1 bg-gradient-to-b from-[#C1FF00] to-[#83c5be] rounded-full"></span>
                 Quick Actions
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <motion.div
                   initial={{ scale: 0.95, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -325,6 +333,27 @@ export function Dashboard() {
                     </div>
                   </Card>
                 </motion.div>
+
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                >
+                  <Card className="h-32 group bg-[#0A0A0A] border-[#1A1A1A] hover:border-[#C1FF00]/30 shadow-lg transition-all duration-300">
+                    <div
+                      className="flex flex-col items-center justify-center h-full gap-3 p-4 cursor-pointer"
+                      onClick={() => setShowDiagramChat(true)}
+                    >
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#C1FF00] to-[#83c5be] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <GitBranch className="h-6 w-6 text-black" />
+                      </div>
+                      <span className="text-white font-medium text-center">
+                        Build Diagrams
+                      </span>
+                    </div>
+                  </Card>
+                </motion.div>
               </div>
             </div>
 
@@ -340,6 +369,10 @@ export function Dashboard() {
               />
             </div>
           </div>
+        ) : showDiagramChat ? (
+          <DiagramChatInterface
+            onBackToDashboard={() => setShowDiagramChat(false)}
+          />
         ) : (
           <ChatInterface
             onBackToDashboard={() => setShowChat(false)}
