@@ -72,13 +72,10 @@ export function Dashboard() {
   const [selectedRepository, setSelectedRepository] = useState<string | null>(
     null
   );
-
-  // Replace repositories useState with Redux selector
   const repositories = useSelector(
     (state: RootState) => state.knowledgebase.repositories
   );
 
-  // Remove handleCreateKnowledgebase as it's now handled in CreateKnowledgebaseModal
   const handleSelectRepository = (id: string) => {
     setSelectedRepository(id);
     setShowChat(true);
@@ -90,25 +87,7 @@ export function Dashboard() {
 
   if (!mounted) return null;
 
-  const handleCreateKnowledgebase = (
-    name: string,
-    description: string,
-    files: File[]
-  ) => {
-    // Implement the logic to create a new knowledgebase
-    console.log("Creating knowledgebase:", { name, description, files });
-    // Update the repositories state with the new knowledgebase
-    setRepositories([
-      ...repositories,
-      {
-        id: (repositories.length + 1).toString(),
-        name,
-        description,
-        dateCreated: new Date().toISOString().split("T")[0],
-        documentCount: files.length,
-      },
-    ]);
-  };
+  // Remove handleCreateKnowledgebase function as it's handled by CreateKnowledgebaseModal
 
   return (
     <div className="flex min-h-screen bg-black">
@@ -353,7 +332,6 @@ export function Dashboard() {
       <CreateKnowledgebaseModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onCreate={handleCreateKnowledgebase}
       />
     </div>
   );

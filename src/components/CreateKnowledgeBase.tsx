@@ -12,6 +12,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { addKnowledgebase } from "@/app/lib/knowledgebase/knowledgebaseSlice";
+import { v4 as uuidv4 } from "uuid"; // Add this import at the top
 
 interface CreateKnowledgebaseModalProps {
   isOpen: boolean;
@@ -116,12 +117,11 @@ export const CreateKnowledgebaseModal: React.FC<
     }
 
     const formData = new FormData();
-    formData.append("uuid", "user1234");
+    formData.append("uuid", uuidv4()); // Generate unique UUID
     formData.append("title", name);
     formData.append("description", description);
     files.forEach((file) => formData.append("document", file));
 
-    setCurrentStep(1);
     mutate(formData);
   };
 
