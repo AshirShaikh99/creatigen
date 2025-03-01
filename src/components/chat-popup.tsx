@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useEffect, useRef } from "react";
 import { X, Send, Brain, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
@@ -27,6 +26,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ onClose, title }) => {
   const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const placeholders = [
     "Ask about this repository...",
@@ -47,10 +47,6 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ onClose, title }) => {
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, []);
-
-  useEffect(() => {
     setMessages([
       {
         id: uuidv4(),
@@ -62,39 +58,21 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ onClose, title }) => {
   }, [title]);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
-    }
-  }, [messages]); //Corrected dependency
-
-  useEffect(() => {
-    const resizeObserver = new ResizeObserver(() => {
-      if (messagesEndRef.current) {
+    const scrollToBottom = () => {
+      if (messagesEndRef.current && !isMinimized) {
         messagesEndRef.current.scrollIntoView({
           behavior: "smooth",
           block: "end",
         });
       }
-    });
-
-    const container = document.querySelector(".custom-scrollbar");
-    if (container) {
-      resizeObserver.observe(container);
-    }
-
-    return () => {
-      if (container) {
-        resizeObserver.unobserve(container);
-      }
     };
-  }, []);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+    scrollToBottom();
+
+    // Add a small delay to ensure smooth scrolling after new messages
+    const timeoutId = setTimeout(scrollToBottom, 100);
+    return () => clearTimeout(timeoutId);
+  }, [isMinimized]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -202,7 +180,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ onClose, title }) => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col max-w-md w-full h-[600px] shadow-xl rounded-xl overflow-hidden bg-black">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col max-w-md w-full shadow-xl rounded-xl overflow-hidden bg-black">
       <div className="bg-black border-b border-[#C1FF00]/20 p-3 flex items-center justify-between">
         <div className="flex items-center">
           <div className="bg-[#C1FF00] p-1.5 rounded-full mr-2">
@@ -226,13 +204,17 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ onClose, title }) => {
         </div>
       </div>
 
-      {!isMinimized && (
-        <div className="flex-1 flex flex-col overflow-hidden">
+      <div
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          isMinimized ? "max-h-0" : "max-h-[600px]"
+        }`}
+      >
+        <div className="flex flex-col h-[600px]">
           <div
-            className="bg-black flex-1 overflow-y-auto p-4 custom-scrollbar"
-            style={{ maxHeight: "calc(100vh - 200px)" }}
+            className="flex-1 overflow-y-auto p-4 custom-scrollbar"
+            ref={chatContainerRef}
           >
-            <div className="space-y-4 flex flex-col">
+            <div className="space-y-4">
               {messages.map((message) => (
                 <div
                   key={message.id}
@@ -299,7 +281,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ onClose, title }) => {
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
