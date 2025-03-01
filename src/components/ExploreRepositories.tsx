@@ -32,7 +32,7 @@ export const RepositoryList: React.FC<RepositoryListProps> = ({
           transition={{ duration: 0.3 }}
         >
           <Card
-            className="bg-gray-900 border-[#C1FF00]/20 hover:border-[#C1FF00]/50 transition-colors cursor-pointer"
+            className="bg-[#111111] border-[#222222] hover:border-[#C1FF00]/50 transition-colors cursor-pointer"
             onClick={() => onSelectRepository(repo.id)}
           >
             <div className="p-6">

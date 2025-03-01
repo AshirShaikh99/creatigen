@@ -24,6 +24,7 @@ import { CreateKnowledgebaseModal } from "@/components/CreateKnowledgeBase";
 import { RepositoryList } from "@/components/ExploreRepositories";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/lib/store";
+import ChatPopup from "@/components/chat-popup";
 
 const features = [
   {
@@ -72,13 +73,15 @@ export function Dashboard() {
   const [selectedRepository, setSelectedRepository] = useState<string | null>(
     null
   );
+  const [selectedRepositoryPopup, setSelectedRepositoryPopup] = useState<
+    string | null
+  >(null);
   const repositories = useSelector(
     (state: RootState) => state.knowledgebase.repositories
   );
 
   const handleSelectRepository = (id: string) => {
-    setSelectedRepository(id);
-    setShowChat(true);
+    setSelectedRepositoryPopup(id);
   };
 
   useEffect(() => {
@@ -325,6 +328,15 @@ export function Dashboard() {
           <ChatInterface
             onBackToDashboard={() => setShowChat(false)}
             selectedRepository={selectedRepository}
+          />
+        )}
+        {selectedRepositoryPopup && (
+          <ChatPopup
+            onClose={() => setSelectedRepositoryPopup(null)}
+            title={
+              repositories.find((repo) => repo.uuid === selectedRepositoryPopup)
+                ?.name || "Repository Chat"
+            }
           />
         )}
       </motion.main>

@@ -1,4 +1,7 @@
+"use client";
+
 import type React from "react";
+
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "@/app/lib/store";
@@ -10,18 +13,19 @@ import {
 import type { Message } from "@/app/lib/messages/messageSlice";
 import MessageList from "@/components/chat-page/MessageList";
 import { v4 as uuidv4 } from "uuid";
-import { DotPattern } from "@/components/ui/dot-pattern";
-import { cn } from "@/lib/utils";
 import axios from "axios";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { ShimmerButton } from "@/components/magicui/shimmer-button";
-import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
-import { Brain } from "lucide-react";
+  Brain,
+  Plus,
+  Send,
+  ArrowLeft,
+  Database,
+  Activity,
+  MessageSquare,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 
 interface ChatInterfaceProps {
   onBackToDashboard: () => void;
@@ -60,6 +64,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [sessionId] = useState<string>(uuidv4());
   const [inputValue, setInputValue] = useState<string>("");
+  const [currentPlaceholder, setCurrentPlaceholder] = useState<string>(
+    "How can I help you?"
+  );
 
   const placeholders = [
     "/diagram Create a flowchart for user registration",
@@ -189,42 +196,75 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     dispatch(setDeepSearch(checked));
   };
 
+  // Cycle through placeholders
+  useState(() => {
+    const interval = setInterval(() => {
+      const currentIndex = placeholders.indexOf(currentPlaceholder);
+      const nextIndex = (currentIndex + 1) % placeholders.length;
+      setCurrentPlaceholder(placeholders[nextIndex]);
+    }, 3000);
+    return () => clearInterval(interval);
+  });
+
   return (
-    <div className="h-[calc(100vh-2rem)] flex flex-col relative">
-      <DotPattern
-        className={cn(
-          "absolute inset-0 w-full h-full opacity-20",
-          "[mask-image:radial-gradient(100% 100% at center center,white,transparent)]"
-        )}
-      />
-
-      <TooltipProvider>
-        <div className="flex justify-between pb-4 sticky top-0 bg-black z-20">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <ShimmerButton
-                onClick={() => dispatch(resetChat())}
-                className="p-3 text-white flex items-center gap-2"
-              >
-                Start New Chat
-              </ShimmerButton>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Start New Creative Chat</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <ShimmerButton
+    <div className="min-h-screen bg-black text-white flex flex-col">
+      {/* Header */}
+      <div className="p-6 border-b border-[#C1FF00]/20">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">
+            Welcome to Your{" "}
+            <span className="text-[#C1FF00]">Creative Space</span>
+          </h1>
+          <Button
+            variant="outline"
+            className="border-[#C1FF00] text-[#C1FF00] hover:bg-[#C1FF00]/10"
             onClick={onBackToDashboard}
-            className="p-3 text-white flex items-center gap-2"
           >
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Dashboard
-          </ShimmerButton>
+          </Button>
         </div>
-      </TooltipProvider>
+        <p className="text-gray-400 mt-2">
+          Organize, explore, and interact with your data using AI
+        </p>
+      </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto px-4">
+      {/* Stats Section */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
+        <div className="bg-[#121212] rounded-lg p-4 flex items-center">
+          <div className="bg-[#C1FF00] p-3 rounded-lg mr-4">
+            <Database className="h-6 w-6 text-black" />
+          </div>
+          <div>
+            <p className="text-gray-400">Total Knowledge Bases</p>
+            <p className="text-3xl font-bold">2</p>
+          </div>
+        </div>
+
+        <div className="bg-[#121212] rounded-lg p-4 flex items-center">
+          <div className="bg-[#C1FF00] p-3 rounded-lg mr-4">
+            <Activity className="h-6 w-6 text-black" />
+          </div>
+          <div>
+            <p className="text-gray-400">Recent Activities</p>
+            <p className="text-3xl font-bold">24</p>
+          </div>
+        </div>
+
+        <div className="bg-[#121212] rounded-lg p-4 flex items-center">
+          <div className="bg-[#C1FF00] p-3 rounded-lg mr-4">
+            <MessageSquare className="h-6 w-6 text-black" />
+          </div>
+          <div>
+            <p className="text-gray-400">AI Interactions</p>
+            <p className="text-3xl font-bold">128</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Section */}
+      <div className="flex-1 overflow-y-auto p-6">
+        <div className="max-w-4xl mx-auto">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-center">
               <Brain className="h-16 w-16 text-[#C1FF00] mb-4" />
@@ -237,7 +277,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               </p>
               {selectedKnowledgeBase && (
                 <p className="text-[#C1FF00] mt-4">
-                  Chatting with: || {selectedKnowledgeBase.name}
+                  Chatting with: {selectedKnowledgeBase.name}
                 </p>
               )}
             </div>
@@ -249,14 +289,75 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm py-4 border-t border-[#C1FF00]/20">
+      {/* Quick Actions */}
+      <div className="p-6 border-t border-[#C1FF00]/20">
+        <div className="mb-4">
+          <h2 className="text-xl font-bold flex items-center">
+            <div className="w-2 h-6 bg-[#C1FF00] mr-2"></div>
+            Quick Actions
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <Button
+            variant="outline"
+            className="bg-[#121212] border-[#C1FF00]/20 hover:bg-[#1a1a1a] h-24 flex flex-col items-center justify-center"
+          >
+            <div className="bg-[#C1FF00] p-3 rounded-full mb-2">
+              <Plus className="h-6 w-6 text-black" />
+            </div>
+            <span>Create Knowledge Base</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            className="bg-[#121212] border-[#C1FF00]/20 hover:bg-[#1a1a1a] h-24 flex flex-col items-center justify-center"
+            onClick={() => dispatch(resetChat())}
+          >
+            <div className="bg-[#C1FF00] p-3 rounded-full mb-2">
+              <Brain className="h-6 w-6 text-black" />
+            </div>
+            <span>Start AI Conversation</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Input Section - Centered */}
+      <div className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm py-6 border-t border-[#C1FF00]/20">
         <div className="max-w-3xl mx-auto px-4">
-          <PlaceholdersAndVanishInput
-            placeholders={placeholders}
-            onChange={handleInputChange}
+          <form
             onSubmit={handleFormSubmit}
-            onSwitchChange={handleSwitchChange}
-          />
+            className="flex flex-col items-center"
+          >
+            <div className="flex items-center w-full max-w-2xl mx-auto mb-2">
+              <div className="flex items-center mr-4">
+                <Switch
+                  checked={isDeepSearch}
+                  onCheckedChange={handleSwitchChange}
+                  className="data-[state=checked]:bg-[#C1FF00]"
+                />
+                <span className="ml-2 text-sm text-gray-400">Deep Search</span>
+              </div>
+            </div>
+
+            <div className="flex w-full max-w-2xl mx-auto">
+              <Input
+                type="text"
+                value={inputValue}
+                onChange={handleInputChange}
+                placeholder={currentPlaceholder}
+                className="flex-1 bg-[#121212] border-[#C1FF00]/20 focus:border-[#C1FF00] focus:ring-[#C1FF00] text-white placeholder-gray-500"
+              />
+              <Button
+                type="submit"
+                className="ml-2 bg-[#C1FF00] text-black hover:bg-[#a6d600]"
+                disabled={isLoading}
+              >
+                <Send className="h-4 w-4" />
+                <span className="sr-only">Send message</span>
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
