@@ -127,8 +127,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     const messageContent = text.trim();
     const isDiagram = isDiagramRequest(messageContent);
 
-    dispatch(setDeepSearch(false));
-
     const userMessage: Message = {
       id: uuidv4(),
       sender: "user",
@@ -144,6 +142,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         ? "http://localhost:8000/api/v1/diagram"
         : "http://localhost:8000/api/v1/chat";
 
+      console.log("Sending request to:", endpoint, {
+        message: messageContent,
+        collection_name: selectedKnowledgeBase?.collection_name,
+        session_id: sessionId,
+      });
+
       const requestData = {
         message:
           isDiagram && !messageContent.startsWith("/diagram")
@@ -151,7 +155,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             : messageContent,
         session_id: sessionId,
         deep_research: isDeepSearch,
-        collection_name: selectedKnowledgeBase?.name,
+        collection_name:
+          selectedKnowledgeBase?.collection_name ||
+          selectedKnowledgeBase?.name?.toLowerCase().replace(/\s+/g, "_"),
       };
 
       const response = await axios.post(endpoint, requestData, {
@@ -160,6 +166,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           "user-id": sessionId,
         },
       });
+
+      console.log("API Response:", response.data);
 
       const aiMessage = isDiagram
         ? await processDiagramResponse(response.data as DiagramResponse)
