@@ -17,6 +17,7 @@ import {
   Menu,
   X,
   Plus,
+  Home,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ChatInterface from "@/components/ChatInterface";
@@ -25,11 +26,19 @@ import { RepositoryList } from "@/components/ExploreRepositories";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/lib/store";
 import ChatPopup from "@/components/chat-popup";
+import { cn } from "@/lib/utils";
 
 const features = [
   {
+    icon: Home,
+    title: "Dashboard",
+    description: "Overview of your workspace",
+    href: "/dashboard",
+    isActive: true,
+  },
+  {
     icon: Brain,
-    title: "Create Creative Repository",
+    title: "Create Repository",
     description: "Start a new repository",
     href: "/create-knowledge-base",
   },
@@ -90,14 +99,13 @@ export function Dashboard() {
 
   if (!mounted) return null;
 
-  // Remove handleCreateKnowledgebase function as it's handled by CreateKnowledgebaseModal
-
   return (
     <div className="flex min-h-screen bg-black">
       {/* Mobile sidebar toggle */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-full bg-[#C1FF00]/20 text-[#C1FF00] hover:bg-[#C1FF00]/30 transition-all duration-300"
+        aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
       >
         {isSidebarOpen ? (
           <X className="h-5 w-5" />
@@ -107,8 +115,8 @@ export function Dashboard() {
       </button>
 
       {/* Sidebar */}
-      <motion.div
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-black border-r border-[#C1FF00]/20 transform lg:translate-x-0 transition-all duration-300 ease-in-out ${
+      <motion.aside
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0A0A0A] border-r border-[#1A1A1A] transform lg:translate-x-0 transition-all duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:relative`}
         initial={{ x: -100, opacity: 0 }}
@@ -117,9 +125,9 @@ export function Dashboard() {
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="border-b border-[#C1FF00]/20 p-4">
+          <div className="border-b border-[#1A1A1A] p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br bg-[#83c5be] flex items-center justify-center">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#C1FF00] to-[#83c5be] flex items-center justify-center">
                 <Brain className="h-6 w-6 text-black" />
               </div>
               <span className="text-xl font-bold text-white">Creatigen</span>
@@ -128,38 +136,62 @@ export function Dashboard() {
 
           {/* Menu */}
           <div className="flex-1 overflow-y-auto py-4 px-3">
-            <ul className="space-y-1">
-              {features.map((feature, index) => (
-                <motion.li
-                  key={feature.title}
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <div
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-[#C1FF00]/10 transition-all duration-200 group cursor-pointer"
-                    onClick={() => {
-                      if (feature.title === "Chat with Knowledge Base") {
-                        setShowChat(true);
-                      } else if (feature.href) {
-                        // For actual link navigation in a real app
-                        // window.location.href = feature.href;
-                      }
-                    }}
+            <nav>
+              <ul className="space-y-1">
+                {features.map((feature, index) => (
+                  <motion.li
+                    key={feature.title}
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: index * 0.1 }}
                   >
-                    <div className="h-8 w-8 rounded-lg bg-[#C1FF00]/10 flex items-center justify-center text-[#C1FF00] group-hover:bg-[#C1FF00]/20 transition-all duration-200">
-                      <feature.icon className="h-4 w-4" />
+                    <div
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group cursor-pointer",
+                        feature.isActive
+                          ? "bg-[#C1FF00]/15 text-white"
+                          : "text-gray-400 hover:text-white hover:bg-[#C1FF00]/10"
+                      )}
+                      onClick={() => {
+                        if (feature.title === "Chat with Knowledge Base") {
+                          setShowChat(true);
+                        } else if (feature.title === "Create Repository") {
+                          setIsCreateModalOpen(true);
+                        }
+                        // Close sidebar on mobile after selection
+                        if (window.innerWidth < 1024) {
+                          setIsSidebarOpen(false);
+                        }
+                      }}
+                    >
+                      <div
+                        className={cn(
+                          "h-8 w-8 rounded-lg flex items-center justify-center transition-all duration-200",
+                          feature.isActive
+                            ? "bg-[#C1FF00] text-black"
+                            : "bg-[#1A1A1A] text-[#C1FF00] group-hover:bg-[#C1FF00]/20"
+                        )}
+                      >
+                        <feature.icon className="h-4 w-4" />
+                      </div>
+                      <span className="font-medium">{feature.title}</span>
+                      <ChevronRight
+                        className={cn(
+                          "h-4 w-4 ml-auto transition-opacity",
+                          feature.isActive
+                            ? "opacity-100"
+                            : "opacity-0 group-hover:opacity-100"
+                        )}
+                      />
                     </div>
-                    <span>{feature.title}</span>
-                    <ChevronRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                </motion.li>
-              ))}
-            </ul>
+                  </motion.li>
+                ))}
+              </ul>
+            </nav>
           </div>
 
           {/* Footer */}
-          <div className="border-t border-[#C1FF00]/20 p-4">
+          <div className="border-t border-[#1A1A1A] p-4">
             <Button
               variant="ghost"
               className="w-full text-gray-400 hover:text-white hover:bg-[#C1FF00]/10 justify-start gap-3"
@@ -169,12 +201,12 @@ export function Dashboard() {
             </Button>
           </div>
         </div>
-      </motion.div>
+      </motion.aside>
 
       {/* Backdrop for mobile */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-30 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -196,7 +228,7 @@ export function Dashboard() {
             >
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
                 Welcome to Your{" "}
-                <span className="bg-gradient-to-r bg-[#C1FF00] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#C1FF00] to-[#83c5be] bg-clip-text text-transparent">
                   Creative Space
                 </span>
               </h1>
@@ -211,20 +243,20 @@ export function Dashboard() {
                 {
                   icon: Database,
                   title: "Total Knowledge Bases",
-                  value: repositories.length, // Dynamic value from Redux
-                  color: "bg-[#C1FF00]",
+                  value: repositories.length,
+                  color: "from-[#C1FF00] to-[#83c5be]",
                 },
                 {
                   icon: Activity,
                   title: "Recent Activities",
                   value: 24,
-                  color: "bg-[#C1FF00]",
+                  color: "from-[#C1FF00] to-[#83c5be]",
                 },
                 {
                   icon: MessageSquare,
                   title: "AI Interactions",
                   value: 128,
-                  color: "bg-[#C1FF00]",
+                  color: "from-[#C1FF00] to-[#83c5be]",
                 },
               ].map((stat, index) => (
                 <motion.div
@@ -234,17 +266,17 @@ export function Dashboard() {
                   transition={{ duration: 0.5, delay: 0.1 * index }}
                   whileHover={{ y: -5, transition: { duration: 0.2 } }}
                 >
-                  <Card className="relative overflow-hidden bg-[#111111] border-[#222222]">
+                  <Card className="relative overflow-hidden bg-[#0A0A0A] border-[#1A1A1A] shadow-lg">
                     <div
-                      className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r opacity-80"
+                      className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r"
                       style={{
-                        backgroundImage: `linear-gradient(to right, ${stat.color}, ${stat.color})`,
+                        backgroundImage: `linear-gradient(to right, ${stat.color})`,
                       }}
                     ></div>
                     <div className="p-6">
                       <div className="flex items-center gap-4">
                         <div
-                          className={`h-12 w-12 rounded-lg ${stat.color} flex items-center justify-center shadow-lg`}
+                          className={`h-12 w-12 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg`}
                         >
                           <stat.icon className="h-6 w-6 text-black" />
                         </div>
@@ -264,7 +296,7 @@ export function Dashboard() {
             {/* Quick Actions */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                <span className="h-8 w-1 bg-gradient-to-b bg-[#C1FF00] rounded-full"></span>
+                <span className="h-8 w-1 bg-gradient-to-b from-[#C1FF00] to-[#83c5be] rounded-full"></span>
                 Quick Actions
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -274,12 +306,12 @@ export function Dashboard() {
                   transition={{ duration: 0.5, delay: 0.2 }}
                   whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
                 >
-                  <Card className="h-32 group glass-card bg-[#111111] border-[#222222]">
+                  <Card className="h-32 group bg-[#0A0A0A] border-[#1A1A1A] hover:border-[#C1FF00]/30 shadow-lg transition-all duration-300">
                     <div
                       className="flex flex-col items-center justify-center h-full gap-3 p-4 cursor-pointer"
                       onClick={() => setIsCreateModalOpen(true)}
                     >
-                      <div className="h-12 w-12 rounded-full bg-[#C1FF00] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#C1FF00] to-[#83c5be] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <Plus className="h-6 w-6 text-black" />
                       </div>
                       <span className="text-white font-medium text-center">
@@ -295,12 +327,12 @@ export function Dashboard() {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
                 >
-                  <Card className="h-32 group glass-card bg-[#111111] border-[#222222]">
+                  <Card className="h-32 group bg-[#0A0A0A] border-[#1A1A1A] hover:border-[#C1FF00]/30 shadow-lg transition-all duration-300">
                     <div
                       className="flex flex-col items-center justify-center h-full gap-3 p-4 cursor-pointer"
                       onClick={() => setShowChat(true)}
                     >
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br bg-[#C1FF00] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#C1FF00] to-[#83c5be] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <Brain className="h-6 w-6 text-black" />
                       </div>
                       <span className="text-white font-medium text-center">
@@ -315,7 +347,7 @@ export function Dashboard() {
             {/* Repository List */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                <span className="h-8 w-1 bg-gradient-to-b bg-[#C1FF00] rounded-full"></span>
+                <span className="h-8 w-1 bg-gradient-to-b from-[#C1FF00] to-[#83c5be] rounded-full"></span>
                 Your Knowledgebases
               </h2>
               <RepositoryList
