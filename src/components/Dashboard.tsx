@@ -22,9 +22,8 @@ import { motion } from "framer-motion";
 import ChatInterface from "@/components/ChatInterface";
 import { CreateKnowledgebaseModal } from "@/components/CreateKnowledgeBase";
 import { RepositoryList } from "@/components/ExploreRepositories";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import type { RootState } from "@/app/lib/store";
-import { addKnowledgebase } from "@/app/lib/knowledgebase/knowledgebaseSlice";
 
 const features = [
   {
@@ -74,11 +73,16 @@ export function Dashboard() {
     null
   );
 
-  // Replace useState with useSelector for repositories
+  // Replace repositories useState with Redux selector
   const repositories = useSelector(
     (state: RootState) => state.knowledgebase.repositories
   );
-  const dispatch = useDispatch();
+
+  // Remove handleCreateKnowledgebase as it's now handled in CreateKnowledgebaseModal
+  const handleSelectRepository = (id: string) => {
+    setSelectedRepository(id);
+    setShowChat(true);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -91,20 +95,19 @@ export function Dashboard() {
     description: string,
     files: File[]
   ) => {
-    const newKnowledgebase = {
-      id: (repositories.length + 1).toString(),
-      name,
-      description,
-      dateCreated: new Date().toISOString().split("T")[0],
-      documentCount: files.length,
-    };
-
-    dispatch(addKnowledgebase(newKnowledgebase));
-  };
-
-  const handleSelectRepository = (id: string) => {
-    setSelectedRepository(id);
-    setShowChat(true);
+    // Implement the logic to create a new knowledgebase
+    console.log("Creating knowledgebase:", { name, description, files });
+    // Update the repositories state with the new knowledgebase
+    setRepositories([
+      ...repositories,
+      {
+        id: (repositories.length + 1).toString(),
+        name,
+        description,
+        dateCreated: new Date().toISOString().split("T")[0],
+        documentCount: files.length,
+      },
+    ]);
   };
 
   return (
@@ -226,7 +229,7 @@ export function Dashboard() {
                 {
                   icon: Database,
                   title: "Total Knowledge Bases",
-                  value: 3,
+                  value: repositories.length, // Dynamic value from Redux
                   color: "bg-[#C1FF00]",
                 },
                 {
@@ -333,32 +336,10 @@ export function Dashboard() {
                 <span className="h-8 w-1 bg-gradient-to-b bg-[#C1FF00] rounded-full"></span>
                 Your Knowledgebases
               </h2>
-              {repositories.length > 0 ? (
-                <RepositoryList
-                  repositories={repositories}
-                  onSelectRepository={handleSelectRepository}
-                />
-              ) : (
-                <Card className="p-8 bg-[#111111] border-[#222222] text-center">
-                  <div className="flex flex-col items-center gap-4">
-                    <Database className="h-12 w-12 text-gray-400" />
-                    <div>
-                      <h3 className="text-lg font-medium text-white mb-2">
-                        No Creative Repositories Yet
-                      </h3>
-                      <p className="text-gray-400 mb-4">
-                        Create your first knowledge base to get started
-                      </p>
-                      <Button
-                        onClick={() => setIsCreateModalOpen(true)}
-                        className="bg-[#C1FF00] text-black hover:bg-[#C1FF00]/90"
-                      >
-                        Create Knowledge Base
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              )}
+              <RepositoryList
+                repositories={repositories}
+                onSelectRepository={handleSelectRepository}
+              />
             </div>
           </div>
         ) : (

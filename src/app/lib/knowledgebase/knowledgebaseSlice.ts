@@ -1,4 +1,3 @@
-// src/store/knowledgebaseSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface Knowledgebase {
@@ -7,14 +6,19 @@ interface Knowledgebase {
   description: string;
   dateCreated: string;
   documentCount: number;
+  collection_name: string;
+  uuid: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface KnowledgebaseState {
-  repositories: Knowledgebase[];
+  repositories: Knowledgebase[]; // Changed from 'knowledgebases' to 'repositories'
 }
 
 const initialState: KnowledgebaseState = {
-  repositories: [],
+  repositories: [], // Changed from 'knowledgebases' to 'repositories'
 };
 
 const knowledgebaseSlice = createSlice({
@@ -22,9 +26,8 @@ const knowledgebaseSlice = createSlice({
   initialState,
   reducers: {
     addKnowledgebase: (state, action: PayloadAction<Knowledgebase>) => {
-      state.repositories.push(action.payload);
+      state.repositories.push(action.payload); // Changed from 'knowledgebases' to 'repositories'
     },
-    // Add other reducers as needed
   },
 });
 

@@ -48,6 +48,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const isDeepSearch = useSelector(
     (state: RootState) => state.chat.isDeepSearch
   );
+  const repositories = useSelector(
+    (state: RootState) => state.knowledgebase.repositories
+  );
+
+  // Get the selected repository details
+  const selectedKnowledgeBase = repositories.find(
+    (repo) => repo.id === selectedRepository
+  );
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [sessionId] = useState<string>(uuidv4());
@@ -136,7 +144,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             : messageContent,
         session_id: sessionId,
         deep_research: isDeepSearch,
-        repository_id: selectedRepository, // Add the selected repository to the request
+        collection_name:
+          selectedKnowledgeBase?.name.toLowerCase().replace(/\s+/g, "_") ||
+          "documents",
       };
 
       const response = await axios.post(endpoint, requestData, {
@@ -227,9 +237,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 Ask questions, create diagrams, or explore your knowledge base
                 with AI assistance.
               </p>
-              {selectedRepository && (
+              {selectedKnowledgeBase && (
                 <p className="text-[#C1FF00] mt-4">
-                  Chatting with repository: {selectedRepository}
+                  Chatting with: {selectedKnowledgeBase.name}
                 </p>
               )}
             </div>
