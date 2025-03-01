@@ -58,8 +58,14 @@ export const CreateKnowledgebaseModal: React.FC<
   const { mutate, isPending: isLoading } = useMutation({
     mutationFn: createKnowledgeBase,
     onSuccess: (response) => {
+      console.log("API Response:", {
+        uuid: response.uuid,
+        collection_name: response.collection_name,
+        id: response.id,
+      });
+
       const knowledgebase = {
-        id: response.id.toString(),
+        id: response.uuid, // Use UUID instead of ID
         name: response.title,
         description: response.description,
         dateCreated: response.created_at,
@@ -70,18 +76,6 @@ export const CreateKnowledgebaseModal: React.FC<
         created_at: response.created_at,
         updated_at: response.updated_at,
       };
-
-      // Simulate a multi-step process with timed animations
-      const steps = [
-        { step: 1, delay: 0 }, // Uploading files
-        { step: 2, delay: 1500 }, // Processing documents
-        { step: 3, delay: 3000 }, // Creating knowledgebase
-        { step: 4, delay: 4500 }, // Complete
-      ];
-
-      steps.forEach(({ step, delay }) => {
-        setTimeout(() => setCurrentStep(step), delay);
-      });
 
       // Show success message and close after animation completes
       setTimeout(() => {

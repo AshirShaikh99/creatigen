@@ -54,7 +54,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   // Get the selected repository details
   const selectedKnowledgeBase = repositories.find(
-    (repo) => repo.id === selectedRepository
+    (repo) => repo.uuid === selectedRepository
   );
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -144,9 +144,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             : messageContent,
         session_id: sessionId,
         deep_research: isDeepSearch,
-        collection_name:
-          selectedKnowledgeBase?.name.toLowerCase().replace(/\s+/g, "_") ||
-          "documents",
+        collection_name: selectedKnowledgeBase?.name,
       };
 
       const response = await axios.post(endpoint, requestData, {
@@ -239,7 +237,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               </p>
               {selectedKnowledgeBase && (
                 <p className="text-[#C1FF00] mt-4">
-                  Chatting with: {selectedKnowledgeBase.name}
+                  Chatting with: || {selectedKnowledgeBase.name}
                 </p>
               )}
             </div>
