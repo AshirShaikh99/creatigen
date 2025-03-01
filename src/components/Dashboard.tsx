@@ -86,7 +86,7 @@ export function Dashboard() {
       {/* Mobile sidebar toggle */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-full bg-[#C1FF00]/20 text-[#C1FF00] hover:bg-[#C1FF00]/30 transition-all duration-300"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-full bg-[#C1FF00]/20 text-[#C1FF00] hover:bg-[#95d5b2]/30 transition-all duration-300"
         aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
       >
         {isSidebarOpen ? (
@@ -109,7 +109,7 @@ export function Dashboard() {
           {/* Logo */}
           <div className="border-b border-[#1A1A1A] p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#C1FF00] to-[#83c5be] flex items-center justify-center">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#d8f3dc] to-[#83c5be] flex items-center justify-center">
                 <Brain className="h-6 w-6 text-black" />
               </div>
               <span className="text-xl font-bold text-white">Creatigen</span>
@@ -134,7 +134,7 @@ export function Dashboard() {
                           (feature.title === "Build Diagrams" &&
                             showDiagramChat)
                           ? "bg-[#C1FF00]/15 text-white"
-                          : "text-gray-400 hover:text-white hover:bg-[#C1FF00]/10"
+                          : "text-gray-400 hover:text-white hover:bg-[#95d5b2]/10"
                       )}
                       onClick={() => {
                         if (feature.title === "Build Diagrams") {
@@ -158,8 +158,8 @@ export function Dashboard() {
                           feature.isActive ||
                             (feature.title === "Build Diagrams" &&
                               showDiagramChat)
-                            ? "bg-[#C1FF00] text-black"
-                            : "bg-[#1A1A1A] text-[#C1FF00] group-hover:bg-[#C1FF00]/20"
+                            ? "bg-[#d8f3dc] text-black"
+                            : "bg-[#1A1A1A] text-[#d8f3dc] group-hover:bg-[#95d5b2]/20"
                         )}
                       >
                         <feature.icon className="h-4 w-4" />
@@ -186,7 +186,7 @@ export function Dashboard() {
           <div className="border-t border-[#1A1A1A] p-4">
             <Button
               variant="ghost"
-              className="w-full text-gray-400 hover:text-white hover:bg-[#C1FF00]/10 justify-start gap-3"
+              className="w-full text-gray-400 hover:text-white hover:bg-[#95d5b2]/10 justify-start gap-3"
             >
               <LogOut className="h-4 w-4" />
               <span>Sign Out</span>
@@ -220,7 +220,7 @@ export function Dashboard() {
             >
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
                 Welcome to Your{" "}
-                <span className="bg-gradient-to-r from-[#C1FF00] to-[#83c5be] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#d8f3dc] to-[#83c5be] bg-clip-text text-transparent">
                   Creative Space
                 </span>
               </h1>
@@ -236,19 +236,19 @@ export function Dashboard() {
                   icon: Database,
                   title: "Total Knowledge Bases",
                   value: repositories.length,
-                  color: "from-[#C1FF00] to-[#83c5be]",
+                  color: "from-[#d8f3dc] to-[#83c5be]",
                 },
                 {
                   icon: Activity,
                   title: "Recent Activities",
                   value: 24,
-                  color: "from-[#C1FF00] to-[#83c5be]",
+                  color: "from-[#d8f3dc] to-[#83c5be]",
                 },
                 {
                   icon: MessageSquare,
                   title: "AI Interactions",
                   value: 128,
-                  color: "from-[#C1FF00] to-[#83c5be]",
+                  color: "from-[#d8f3dc] to-[#83c5be]",
                 },
               ].map((stat, index) => (
                 <motion.div
@@ -288,7 +288,7 @@ export function Dashboard() {
             {/* Quick Actions */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                <span className="h-8 w-1 bg-gradient-to-b from-[#C1FF00] to-[#83c5be] rounded-full"></span>
+                <span className="h-8 w-1 bg-gradient-to-b from-[#d8f3dc] to-[#83c5be] rounded-full"></span>
                 Quick Actions
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -298,12 +298,12 @@ export function Dashboard() {
                   transition={{ duration: 0.5, delay: 0.2 }}
                   whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
                 >
-                  <Card className="h-32 group bg-[#0A0A0A] border-[#1A1A1A] hover:border-[#C1FF00]/30 shadow-lg transition-all duration-300">
+                  <Card className="h-32 group bg-[#0A0A0A] border-[#1A1A1A] hover:border-[#95d5b2]/30 shadow-lg transition-all duration-300">
                     <div
                       className="flex flex-col items-center justify-center h-full gap-3 p-4 cursor-pointer"
                       onClick={() => setIsCreateModalOpen(true)}
                     >
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#C1FF00] to-[#83c5be] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#d8f3dc] to-[#83c5be] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <Plus className="h-6 w-6 text-black" />
                       </div>
                       <span className="text-white font-medium text-center">
@@ -319,12 +319,12 @@ export function Dashboard() {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
                 >
-                  <Card className="h-32 group bg-[#0A0A0A] border-[#1A1A1A] hover:border-[#C1FF00]/30 shadow-lg transition-all duration-300">
+                  <Card className="h-32 group bg-[#0A0A0A] border-[#1A1A1A] hover:border-[#95d5b2]/30 shadow-lg transition-all duration-300">
                     <div
                       className="flex flex-col items-center justify-center h-full gap-3 p-4 cursor-pointer"
                       onClick={() => setShowChat(true)}
                     >
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#C1FF00] to-[#83c5be] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#d8f3dc] to-[#83c5be] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <Brain className="h-6 w-6 text-black" />
                       </div>
                       <span className="text-white font-medium text-center">
@@ -340,12 +340,12 @@ export function Dashboard() {
                   transition={{ duration: 0.5, delay: 0.4 }}
                   whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
                 >
-                  <Card className="h-32 group bg-[#0A0A0A] border-[#1A1A1A] hover:border-[#C1FF00]/30 shadow-lg transition-all duration-300">
+                  <Card className="h-32 group bg-[#0A0A0A] border-[#1A1A1A] hover:border-[#95d5b2]/30 shadow-lg transition-all duration-300">
                     <div
                       className="flex flex-col items-center justify-center h-full gap-3 p-4 cursor-pointer"
                       onClick={() => setShowDiagramChat(true)}
                     >
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#C1FF00] to-[#83c5be] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#d8f3dc] to-[#83c5be] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <GitBranch className="h-6 w-6 text-black" />
                       </div>
                       <span className="text-white font-medium text-center">
@@ -360,7 +360,7 @@ export function Dashboard() {
             {/* Repository List */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                <span className="h-8 w-1 bg-gradient-to-b from-[#C1FF00] to-[#83c5be] rounded-full"></span>
+                <span className="h-8 w-1 bg-gradient-to-b from-[#d8f3dc] to-[#83c5be] rounded-full"></span>
                 Chat With Creative Space
               </h2>
               <RepositoryList

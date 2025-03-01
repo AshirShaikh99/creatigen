@@ -12,12 +12,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
-import { useEffect } from "react";
 import { SignInDialog } from "@/components/ui/sign-in-dialog";
 import { useState } from "react";
-// Add this import
 import { SignUpDialog } from "@/components/ui/sign-up-dialog";
+import { SignIn } from "@clerk/nextjs";
 
 export function LandingPage() {
   const router = useRouter();
@@ -25,17 +23,17 @@ export function LandingPage() {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 
   const handleSignIn = () => {
-    setIsSignInOpen(true);
+    router.push("/sign-in"); // Redirect to Clerk's sign-in page
   };
 
   const handleSignUp = () => {
-    setIsSignUpOpen(true);
+    router.push("/sign-up"); // Redirect to Clerk's sign-up page
   };
 
   return (
     <div className="min-h-screen bg-black">
       {/* Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#1A1A1A]">
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#1E1E1E]">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold">
             Creatigen
@@ -65,18 +63,20 @@ export function LandingPage() {
           <div className="flex items-center gap-4">
             <Button
               variant="outline"
-              className="border-[#C1FF00] text-[#C1FF00] hover:bg-[#C1FF00] hover:text-black"
+              className="border-[#d8f3dc] text-[#d8f3dc] hover:bg-[#95d5b2] hover:text-black"
               onClick={handleSignIn}
             >
               Sign In
             </Button>
             <Button
-              className="bg-[#C1FF00] hover:bg-[#B1EF00] text-black font-medium"
+              className="bg-[#d8f3dc] hover:bg-[#95d5b2] text-black font-medium"
               onClick={handleSignUp}
             >
               Sign Up
             </Button>
           </div>
+
+          {/* Remove SignInDialog and SignUpDialog components as we're using Clerk */}
         </div>
       </header>
 
@@ -98,11 +98,11 @@ export function LandingPage() {
             <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tight">
               Generate anything
               <br />
-              what's in your mind now.
+              what's in your <span className="text-[#d8f3dc]">mind</span> now.
             </h1>
             <Button
               size="lg"
-              className="bg-[#C1FF00] hover:bg-[#B1EF00] text-black font-medium px-8"
+              className="bg-[#d8f3dc] hover:bg-[#A8E63C] text-black font-medium px-8"
               onClick={handleSignUp}
             >
               Join the waitlist
@@ -112,17 +112,18 @@ export function LandingPage() {
           {/* Features Grid */}
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-16">
-              Discover the Power of Creatigen
+              Discover the Power of{" "}
+              <span className="text-[#d8f3dc]">Creatigen</span>
             </h2>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {features.map((feature) => (
                 <Card
                   key={feature.title}
-                  className="bg-[#111111] border-[#1A1A1A] p-6 hover:bg-[#161616] transition-colors"
+                  className="bg-[#121212] border-[#1E1E1E] p-6 hover:bg-[#161616] transition-colors"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-[#0A0A0A] flex items-center justify-center mb-4">
-                    <feature.icon className="w-6 h-6 text-[#C1FF00]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#1A1A1A] flex items-center justify-center mb-4">
+                    <feature.icon className="w-6 h-6 text-[#d8f3dc]" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2">
                     {feature.title}
@@ -136,7 +137,7 @@ export function LandingPage() {
       </main>
 
       {/* Footer - moved outside header */}
-      <footer className="py-8 border-t border-[#1A1A1A]">
+      <footer className="py-8 border-t border-[#1E1E1E]">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <span className="font-semibold">Creatigen</span>
@@ -181,18 +182,18 @@ const features = [
     icon: GitBranch,
     title: "Diagramming Feature",
     description:
-      "Create architectures and diagrams on the go with our intuitive diagramming tools.",
+      "Visualize your ideas with stunning diagrams! Create professional architectures and flowcharts with our powerful, drag-and-drop tools",
   },
   {
     icon: Cpu,
-    title: "Create Engine",
+    title: "Creative Engine",
     description:
-      "Leverage our powerful Create Engine to bring your ideas to life with AI-assisted content generation.",
+      "Transform your ideas into reality with our cutting-edge Creative Engine - where imagination meets innovation!",
   },
   {
     icon: Brain,
     title: "Creative AI Mentor Agent",
     description:
-      "Get personalized guidance and inspiration from our advanced AI mentor agent throughout your creative process.",
+      "Unlock your creative potential with our AI mentor - your personal guide to innovation, offering real-time insights and inspiration!",
   },
 ];

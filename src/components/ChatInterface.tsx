@@ -221,11 +221,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">
             Welcome to Your{" "}
-            <span className="text-[#C1FF00]">Creative Space</span>
+            <span className="text-[#d8f3dc]">Creative Space</span>
           </h1>
           <Button
             variant="outline"
-            className="border-[#C1FF00] text-[#C1FF00] hover:bg-[#C1FF00]/10"
+            className="border-[#d8f3dc] text-[#d8f3dc] hover:bg-[#C1FF00]/10"
             onClick={onBackToDashboard}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -240,7 +240,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
         <div className="bg-[#121212] rounded-lg p-4 flex items-center">
-          <div className="bg-[#C1FF00] p-3 rounded-lg mr-4">
+          <div className="bg-[#d8f3dc] p-3 rounded-lg mr-4">
             <Database className="h-6 w-6 text-black" />
           </div>
           <div>
@@ -250,7 +250,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </div>
 
         <div className="bg-[#121212] rounded-lg p-4 flex items-center">
-          <div className="bg-[#C1FF00] p-3 rounded-lg mr-4">
+          <div className="bg-[#d8f3dc] p-3 rounded-lg mr-4">
             <Activity className="h-6 w-6 text-black" />
           </div>
           <div>
@@ -260,7 +260,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </div>
 
         <div className="bg-[#121212] rounded-lg p-4 flex items-center">
-          <div className="bg-[#C1FF00] p-3 rounded-lg mr-4">
+          <div className="bg-[#d8f3dc] p-3 rounded-lg mr-4">
             <MessageSquare className="h-6 w-6 text-black" />
           </div>
           <div>
@@ -275,7 +275,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         <div className="max-w-4xl mx-auto">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-center">
-              <Brain className="h-16 w-16 text-[#C1FF00] mb-4" />
+              <Brain className="h-16 w-16 text-[#d8f3dc] mb-4" />
               <h3 className="text-xl font-bold text-white mb-2">
                 Start a Creative Conversation
               </h3>
@@ -284,7 +284,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 with AI assistance.
               </p>
               {selectedKnowledgeBase && (
-                <p className="text-[#C1FF00] mt-4">
+                <p className="text-[#d8f3dc] mt-4">
                   Chatting with: {selectedKnowledgeBase.name}
                 </p>
               )}
@@ -301,7 +301,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <div className="p-6 border-t border-[#C1FF00]/20">
         <div className="mb-4">
           <h2 className="text-xl font-bold flex items-center">
-            <div className="w-2 h-6 bg-[#C1FF00] mr-2"></div>
+            <div className="w-2 h-6 bg-[#d8f3dc] mr-2"></div>
             Quick Actions
           </h2>
         </div>
@@ -311,7 +311,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             variant="outline"
             className="bg-[#121212] border-[#C1FF00]/20 hover:bg-[#1a1a1a] h-24 flex flex-col items-center justify-center"
           >
-            <div className="bg-[#C1FF00] p-3 rounded-full mb-2">
+            <div className="bg-[#d8f3dc] p-3 rounded-full mb-2">
               <Plus className="h-6 w-6 text-black" />
             </div>
             <span>Create Knowledge Base</span>
@@ -322,7 +322,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             className="bg-[#121212] border-[#C1FF00]/20 hover:bg-[#1a1a1a] h-24 flex flex-col items-center justify-center"
             onClick={() => dispatch(resetChat())}
           >
-            <div className="bg-[#C1FF00] p-3 rounded-full mb-2">
+            <div className="bg-[#d8f3dc] p-3 rounded-full mb-2">
               <Brain className="h-6 w-6 text-black" />
             </div>
             <span>Start AI Conversation</span>
@@ -342,7 +342,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 <Switch
                   checked={isDeepSearch}
                   onCheckedChange={handleSwitchChange}
-                  className="data-[state=checked]:bg-[#C1FF00]"
+                  className="data-[state=checked]:bg-[#d8f3dc]"
                 />
                 <span className="ml-2 text-sm text-gray-400">Deep Search</span>
               </div>
@@ -354,11 +354,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 value={inputValue}
                 onChange={handleInputChange}
                 placeholder={currentPlaceholder}
-                className="flex-1 bg-[#121212] border-[#C1FF00]/20 focus:border-[#C1FF00] focus:ring-[#C1FF00] text-white placeholder-gray-500"
+                className="flex-1 bg-[#121212] border-[#C1FF00]/20 focus:border-[#d8f3dc] focus:ring-[#d8f3dc] text-white placeholder-gray-500"
               />
               <Button
                 type="submit"
-                className="ml-2 bg-[#C1FF00] text-black hover:bg-[#a6d600]"
+                className="ml-2 bg-[#d8f3dc] text-black hover:bg-[#d8f3dc]"
                 disabled={isLoading}
               >
                 <Send className="h-4 w-4" />

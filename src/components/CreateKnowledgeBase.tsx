@@ -118,7 +118,7 @@ export const CreateKnowledgebaseModal: React.FC<
 
       // Show success message and close after animation completes
       setTimeout(() => {
-        toast.success("Knowledge base created successfully!");
+        toast.success("Repository created successfully!");
         dispatch(addKnowledgebase(knowledgebase));
         handleReset();
         onClose();
@@ -237,14 +237,14 @@ export const CreateKnowledgebaseModal: React.FC<
           htmlFor="kb-name"
           className="block text-sm font-medium text-gray-200 mb-1"
         >
-          Knowledge Base Name
+          Repository Name
         </label>
         <Input
           id="kb-name"
-          placeholder="Enter a name for your knowledge base"
+          placeholder="Enter a name for your creative repository"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="bg-[#0A0A0A] border-[#1A1A1A] focus:border-[#C1FF00]/50 focus:ring-[#C1FF00]/20"
+          className="bg-[#0A0A0A] border-[#1A1A1A] focus:border-[#d8f3dc]/50 focus:ring-[#C1FF00]/20"
         />
       </div>
 
@@ -257,10 +257,10 @@ export const CreateKnowledgebaseModal: React.FC<
         </label>
         <Textarea
           id="kb-description"
-          placeholder="Add a description for your knowledge base"
+          placeholder="Add a description for your creative repository"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="bg-[#0A0A0A] border-[#1A1A1A] focus:border-[#C1FF00]/50 focus:ring-[#C1FF00]/20 min-h-[80px]"
+          className="bg-[#0A0A0A] border-[#1A1A1A] focus:border-[#d8f3dc]/50 focus:ring-[#C1FF00]/20 min-h-[80px]"
         />
       </div>
 
@@ -272,7 +272,7 @@ export const CreateKnowledgebaseModal: React.FC<
           className={cn(
             "flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-200",
             dragActive
-              ? "border-[#C1FF00] bg-[#C1FF00]/10"
+              ? "border-[#d8f3dc] bg-[#C1FF00]/10"
               : "border-[#1A1A1A] bg-[#0A0A0A] hover:bg-[#111111] hover:border-[#333333]"
           )}
           onDragEnter={handleDrag}
@@ -285,7 +285,7 @@ export const CreateKnowledgebaseModal: React.FC<
               <Upload
                 className={cn(
                   "w-8 h-8 mb-2 transition-colors duration-200",
-                  dragActive ? "text-[#C1FF00]" : "text-gray-400"
+                  dragActive ? "text-[#d8f3dc]" : "text-gray-400"
                 )}
               />
               <p className="mb-2 text-sm text-gray-400">
@@ -331,7 +331,7 @@ export const CreateKnowledgebaseModal: React.FC<
                   key={index}
                   className="flex items-center text-xs text-gray-400"
                 >
-                  <FileText className="h-3 w-3 mr-2 text-[#C1FF00]" />
+                  <FileText className="h-3 w-3 mr-2 text-[#d8f3dc]" />
                   <span className="truncate">{file.name}</span>
                   <span className="ml-auto text-gray-500">
                     {(file.size / 1024).toFixed(0)} KB
@@ -345,7 +345,7 @@ export const CreateKnowledgebaseModal: React.FC<
 
       <Button
         onClick={handleCreate}
-        className="w-full bg-gradient-to-r from-[#C1FF00] to-[#83c5be] text-black hover:from-[#d2ff4d] hover:to-[#9ddbd5] transition-all duration-300"
+        className="w-full bg-gradient-to-r from-[#d8f3dc] to-[#83c5be] text-black hover:from-[#d8f3dc] hover:to-[#9ddbd5] transition-all duration-300"
         disabled={isLoading}
       >
         {isLoading ? (
@@ -354,7 +354,7 @@ export const CreateKnowledgebaseModal: React.FC<
             Processing...
           </>
         ) : (
-          "Create Knowledge Base"
+          "Create Repository"
         )}
       </Button>
     </div>
@@ -370,7 +370,7 @@ export const CreateKnowledgebaseModal: React.FC<
         </div>
         <div className="relative h-2 bg-[#111111] rounded-full overflow-hidden">
           <motion.div
-            className="absolute h-full bg-gradient-to-r from-[#C1FF00] to-[#83c5be] rounded-full"
+            className="absolute h-full bg-gradient-to-r from-[#d8f3dc] to-[#83c5be] rounded-full"
             initial={{ width: "0%" }}
             animate={{ width: `${processingProgress}%` }}
             transition={{ ease: "easeOut" }}
@@ -395,7 +395,7 @@ export const CreateKnowledgebaseModal: React.FC<
           >
             <div className="relative mb-2">
               {currentStep > step ? (
-                <div className="h-10 w-10 rounded-full bg-[#C1FF00] flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full bg-[#d8f3dc] flex items-center justify-center">
                   <CheckCircle2 className="h-5 w-5 text-black" />
                 </div>
               ) : (
@@ -403,20 +403,20 @@ export const CreateKnowledgebaseModal: React.FC<
                   className={cn(
                     "h-10 w-10 rounded-full flex items-center justify-center",
                     currentStep === step
-                      ? "bg-[#111111] border-2 border-[#C1FF00]"
+                      ? "bg-[#111111] border-2 border-[#d8f3dc]"
                       : "bg-[#111111] border border-[#333333]"
                   )}
                 >
                   <Icon
                     className={cn(
                       "h-5 w-5",
-                      currentStep === step ? "text-[#C1FF00]" : "text-gray-500"
+                      currentStep === step ? "text-[#d8f3dc]" : "text-gray-500"
                     )}
                   />
 
                   {currentStep === step && (
                     <motion.div
-                      className="absolute inset-0 rounded-full border-2 border-[#C1FF00] border-t-transparent"
+                      className="absolute inset-0 rounded-full border-2 border-[#d8f3dc] border-t-transparent"
                       animate={{ rotate: 360 }}
                       transition={{
                         duration: 1.5,
@@ -432,7 +432,7 @@ export const CreateKnowledgebaseModal: React.FC<
               className={cn(
                 "text-xs text-center",
                 currentStep > step
-                  ? "text-[#C1FF00]"
+                  ? "text-[#d8f3dc]"
                   : currentStep === step
                   ? "text-white"
                   : "text-gray-500"
@@ -459,8 +459,8 @@ export const CreateKnowledgebaseModal: React.FC<
             {currentStep === 2 && "Processing document content..."}
             {currentStep === 3 && "Creating your knowledge base..."}
             {currentStep === 4 && (
-              <span className="text-[#C1FF00]">
-                Knowledge base created successfully!
+              <span className="text-[#d8f3dc]">
+                Repository created successfully!
               </span>
             )}
           </h3>
@@ -480,7 +480,7 @@ export const CreateKnowledgebaseModal: React.FC<
             className="mt-4"
           >
             <Button
-              className="bg-[#C1FF00] text-black hover:bg-[#d2ff4d]"
+              className="bg-[#d8f3dc] text-black hover:bg-[#d2ff4d]"
               onClick={onClose}
             >
               Go to Dashboard
@@ -510,8 +510,8 @@ export const CreateKnowledgebaseModal: React.FC<
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-white">
                 {currentStep === 0
-                  ? "Create Knowledge Base"
-                  : "Creating Knowledge Base"}
+                  ? "Create Repository"
+                  : "Creating Repository"}
               </h2>
               {currentStep === 0 && (
                 <Button

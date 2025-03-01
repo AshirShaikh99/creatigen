@@ -254,7 +254,7 @@ export default function DiagramChatInterface({
       <div className="relative w-full overflow-hidden rounded-lg bg-[#0A0A0A] border border-[#1A1A1A] p-4">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-[#C1FF00]"></div>
+            <div className="h-3 w-3 rounded-full bg-[#d8f3dc]"></div>
             <span className="text-xs text-gray-400">Creatigen Diagram</span>
           </div>
           <div className="flex gap-1">
@@ -365,7 +365,7 @@ export default function DiagramChatInterface({
                   setInput(`Create a ${type.name.toLowerCase()} for me`);
                 }}
               >
-                <type.icon className="h-4 w-4 text-[#C1FF00]" />
+                <type.icon className="h-4 w-4 text-[#d8f3dc]" />
                 <span>{type.name}</span>
               </DropdownMenuItem>
             ))}
@@ -391,7 +391,7 @@ export default function DiagramChatInterface({
                 className={cn(
                   "max-w-[80%] rounded-2xl p-4",
                   message.role === "user"
-                    ? "bg-[#C1FF00] text-black"
+                    ? "bg-[#d8f3dc] text-black"
                     : "bg-[#111111] text-white border border-[#1A1A1A]"
                 )}
               >
@@ -410,7 +410,7 @@ export default function DiagramChatInterface({
           <div className="flex justify-start">
             <div className="max-w-[80%] rounded-2xl p-4 bg-[#111111] text-white border border-[#1A1A1A]">
               <div className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin text-[#C1FF00]" />
+                <Loader2 className="h-4 w-4 animate-spin text-[#d8f3dc]" />
                 <p className="text-sm text-gray-400">Generating diagram...</p>
               </div>
             </div>
@@ -428,11 +428,11 @@ export default function DiagramChatInterface({
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Describe the diagram you want to create..."
-          className="min-h-[48px] max-h-[200px] pr-12 bg-[#111111] border-[#1A1A1A] focus:border-[#C1FF00]/50 focus:ring-[#C1FF00]/20 rounded-xl resize-none placeholder:text-gray-500"
+          className="min-h-[48px] max-h-[200px] pr-12 bg-[#111111] border-[#1A1A1A] focus:border-[#d8f3dc]/50 focus:ring-[#C1FF00]/20 rounded-xl resize-none placeholder:text-gray-500"
         />
         <Button
           className={cn(
-            "absolute right-2 bottom-2 h-8 w-8 rounded-lg bg-[#C1FF00] hover:bg-[#d2ff4d] text-black transition-opacity",
+            "absolute right-2 bottom-2 h-8 w-8 rounded-lg bg-[#d8f3dc] hover:bg-[#d8f3dc] text-black transition-opacity",
             !input.trim() && "opacity-50 cursor-not-allowed"
           )}
           disabled={!input.trim()}

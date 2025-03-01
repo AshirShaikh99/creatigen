@@ -183,7 +183,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ onClose, title }) => {
     <div className="fixed bottom-4 right-4 z-50 flex flex-col max-w-md w-full shadow-xl rounded-xl overflow-hidden bg-black">
       <div className="bg-black border-b border-[#C1FF00]/20 p-3 flex items-center justify-between">
         <div className="flex items-center">
-          <div className="bg-[#C1FF00] p-1.5 rounded-full mr-2">
+          <div className="bg-[#d8f3dc] p-1.5 rounded-full mr-2">
             <Brain className="h-4 w-4 text-black" />
           </div>
           <h3 className="font-medium text-white">{title}</h3>
@@ -191,13 +191,13 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ onClose, title }) => {
         <div className="flex items-center space-x-1">
           <button
             onClick={() => setIsMinimized(!isMinimized)}
-            className="p-1.5 rounded-full hover:bg-[#C1FF00]/10 text-[#C1FF00]"
+            className="p-1.5 rounded-full hover:bg-[#C1FF00]/10 text-[#d8f3dc]"
           >
             {isMinimized ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-[#C1FF00]/10 text-[#C1FF00]"
+            className="p-1.5 rounded-full hover:bg-[#C1FF00]/10 text-[#d8f3dc]"
           >
             <X size={16} />
           </button>
@@ -225,7 +225,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ onClose, title }) => {
                   <div
                     className={`max-w-[80%] rounded-xl p-3 ${
                       message.sender === "user"
-                        ? "bg-[#C1FF00] text-black ml-auto"
+                        ? "bg-[#d8f3dc] text-black ml-auto"
                         : "bg-[#121212] text-white mr-auto"
                     }`}
                   >
@@ -247,7 +247,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ onClose, title }) => {
               {isLoading && (
                 <div className="flex justify-start w-full">
                   <div className="bg-[#121212] text-white max-w-[80%] rounded-xl p-3 flex items-center mr-auto">
-                    <Loader2 className="h-4 w-4 text-[#C1FF00] animate-spin mr-2" />
+                    <Loader2 className="h-4 w-4 text-[#d8f3dc] animate-spin mr-2" />
                     <p className="text-sm">Thinking...</p>
                   </div>
                 </div>
@@ -273,7 +273,7 @@ const ChatPopup: React.FC<ChatPopupProps> = ({ onClose, title }) => {
                 className={`ml-2 p-2 rounded-full ${
                   isLoading || !inputValue.trim()
                     ? "text-gray-500 cursor-not-allowed"
-                    : "text-[#C1FF00] hover:bg-[#C1FF00]/10"
+                    : "text-[#d8f3dc] hover:bg-[#C1FF00]/10"
                 }`}
               >
                 <Send className="h-4 w-4" />
