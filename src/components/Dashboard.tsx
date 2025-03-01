@@ -18,29 +18,13 @@ import {
   X,
   Plus,
 } from "lucide-react";
-
 import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
+import ChatInterface from "@/components/ChatInterface";
+import { CreateKnowledgebaseModal } from "@/components/CreateKnowledgeBase";
+import { RepositoryList } from "@/components/ExploreRepositories";
+import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "@/app/lib/store";
-import {
-  addMessage,
-  resetChat,
-  setDeepSearch,
-} from "@/app/lib/messages/messageSlice";
-import type { Message } from "@/app/lib/messages/messageSlice";
-import MessageList from "@/components/chat-page/MessageList";
-import { v4 as uuidv4 } from "uuid";
-import { DotPattern } from "@/components/ui/dot-pattern";
-import { cn } from "@/lib/utils";
-import axios from "axios";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { ShimmerButton } from "@/components/magicui/shimmer-button";
-import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+import { addKnowledgebase } from "@/app/lib/knowledgebase/knowledgebaseSlice";
 
 const features = [
   {
@@ -81,167 +65,47 @@ const features = [
   },
 ];
 
-interface DiagramResponse {
-  diagram_type: string;
-  syntax: string;
-  description: string;
-  metadata: {
-    options: Record<string, unknown>;
-    model: string;
-    tokens: number;
-  };
-}
-
 export function Dashboard() {
-  const dispatch = useDispatch();
-  const messages = useSelector((state: RootState) => state.chat.messages);
-  const isDeepSearch = useSelector(
-    (state: RootState) => state.chat.isDeepSearch
-  );
-
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showChat, setShowChat] = useState(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [sessionId] = useState<string>(uuidv4());
-  const [inputValue, setInputValue] = useState<string>("");
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedRepository, setSelectedRepository] = useState<string | null>(
+    null
+  );
 
-  // Chat-related logic
-  const placeholders = [
-    "/diagram Create a flowchart for user registration",
-    "/diagram Draw a sequence diagram for API flow",
-    "/diagram Generate an ER diagram for blog",
-    "How can I help you?",
-    "What's the next big thing in AI?",
-  ];
+  // Replace useState with useSelector for repositories
+  const repositories = useSelector(
+    (state: RootState) => state.knowledgebase.repositories
+  );
+  const dispatch = useDispatch();
 
-  const diagramKeywords = [
-    "draw",
-    "diagram",
-    "flowchart",
-    "sequence",
-    "graph",
-    "chart",
-    "er diagram",
-  ];
-
-  const isDiagramRequest = (text: string): boolean => {
-    const normalizedText = text.toLowerCase();
-    return (
-      normalizedText.startsWith("/diagram") ||
-      diagramKeywords.some((keyword) => normalizedText.includes(keyword))
-    );
-  };
-
-  const processDiagramResponse = async (
-    response: DiagramResponse
-  ): Promise<Message> => {
-    let mermaidSyntax = response.syntax;
-    if (mermaidSyntax.includes("```")) {
-      mermaidSyntax =
-        mermaidSyntax.match(/```(?:lua|mermaid)?\n?([\s\S]*?)```/)?.[1] || "";
-    }
-
-    return {
-      id: uuidv4(),
-      sender: "ai",
-      text: response.description,
-      type: "diagram",
-      diagramData: mermaidSyntax.trim(),
-    };
-  };
-
-  const processTextResponse = (message: string): Message => {
-    return {
-      id: uuidv4(),
-      sender: "ai",
-      text: message,
-      type: "text",
-    };
-  };
-
-  const handleSendMessage = async (text: string) => {
-    if (!text.trim()) return;
-
-    const messageContent = text.trim();
-    const isDiagram = isDiagramRequest(messageContent);
-
-    // Reset deep search after sending message
-    dispatch(setDeepSearch(false));
-
-    const userMessage: Message = {
-      id: uuidv4(),
-      sender: "user",
-      text: messageContent,
-      type: isDiagram ? "diagram" : "text",
-    };
-
-    dispatch(addMessage(userMessage));
-
-    try {
-      setIsLoading(true);
-      const endpoint = isDiagram
-        ? "http://localhost:8000/api/v1/diagram"
-        : "http://localhost:8000/api/v1/chat";
-
-      // Prepare the message for the diagram endpoint
-      const requestData = {
-        message:
-          isDiagram && !messageContent.startsWith("/diagram")
-            ? `/diagram ${messageContent}` // Add /diagram prefix if it's missing
-            : messageContent,
-        session_id: sessionId,
-        deep_research: isDeepSearch,
-      };
-
-      const response = await axios.post(endpoint, requestData, {
-        headers: {
-          "Content-Type": "application/json",
-          "user-id": sessionId,
-        },
-      });
-
-      const aiMessage = isDiagram
-        ? await processDiagramResponse(response.data as DiagramResponse)
-        : processTextResponse(response.data.message);
-
-      dispatch(addMessage(aiMessage));
-    } catch (error) {
-      console.error("Error in request:", error);
-      const errorMessage: Message = {
-        id: uuidv4(),
-        sender: "ai",
-        text: isDiagram
-          ? "Sorry, I couldn't generate the diagram. Please try again."
-          : "Sorry, I'm having trouble connecting to the server.",
-        type: "text",
-      };
-      dispatch(addMessage(errorMessage));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    handleSendMessage(inputValue);
-    setInputValue("");
-  };
-
-  const handleSwitchChange = (checked: boolean) => {
-    dispatch(setDeepSearch(checked));
-  };
-
-  // Dashboard effects
   useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted) return null;
+
+  const handleCreateKnowledgebase = (
+    name: string,
+    description: string,
+    files: File[]
+  ) => {
+    const newKnowledgebase = {
+      id: (repositories.length + 1).toString(),
+      name,
+      description,
+      dateCreated: new Date().toISOString().split("T")[0],
+      documentCount: files.length,
+    };
+
+    dispatch(addKnowledgebase(newKnowledgebase));
+  };
+
+  const handleSelectRepository = (id: string) => {
+    setSelectedRepository(id);
+    setShowChat(true);
+  };
 
   return (
     <div className="flex min-h-screen bg-black">
@@ -270,7 +134,7 @@ export function Dashboard() {
           {/* Logo */}
           <div className="border-b border-[#C1FF00]/20 p-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br bg-[#C1FF00] flex items-center justify-center">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br bg-[#83c5be] flex items-center justify-center">
                 <Brain className="h-6 w-6 text-black" />
               </div>
               <span className="text-xl font-bold text-white">Creatigen</span>
@@ -389,15 +253,13 @@ export function Dashboard() {
                     <div
                       className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r opacity-80"
                       style={{
-                        backgroundImage: `linear-gradient(to right, ${
-                          stat.color.split(" ")[1]
-                        }, ${stat.color.split(" ")[3]})`,
+                        backgroundImage: `linear-gradient(to right, ${stat.color}, ${stat.color})`,
                       }}
                     ></div>
                     <div className="p-6">
                       <div className="flex items-center gap-4">
                         <div
-                          className={`h-12 w-12 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg`}
+                          className={`h-12 w-12 rounded-lg ${stat.color} flex items-center justify-center shadow-lg`}
                         >
                           <stat.icon className="h-6 w-6 text-black" />
                         </div>
@@ -430,9 +292,7 @@ export function Dashboard() {
                   <Card className="h-32 group glass-card bg-[#111111] border-[#222222]">
                     <div
                       className="flex flex-col items-center justify-center h-full gap-3 p-4 cursor-pointer"
-                      onClick={() => {
-                        /* Create Knowledge Base logic */
-                      }}
+                      onClick={() => setIsCreateModalOpen(true)}
                     >
                       <div className="h-12 w-12 rounded-full bg-[#C1FF00] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <Plus className="h-6 w-6 text-black" />
@@ -466,76 +326,54 @@ export function Dashboard() {
                 </motion.div>
               </div>
             </div>
+
+            {/* Repository List */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+                <span className="h-8 w-1 bg-gradient-to-b bg-[#C1FF00] rounded-full"></span>
+                Your Knowledgebases
+              </h2>
+              {repositories.length > 0 ? (
+                <RepositoryList
+                  repositories={repositories}
+                  onSelectRepository={handleSelectRepository}
+                />
+              ) : (
+                <Card className="p-8 bg-[#111111] border-[#222222] text-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <Database className="h-12 w-12 text-gray-400" />
+                    <div>
+                      <h3 className="text-lg font-medium text-white mb-2">
+                        No Creative Repositories Yet
+                      </h3>
+                      <p className="text-gray-400 mb-4">
+                        Create your first knowledge base to get started
+                      </p>
+                      <Button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="bg-[#C1FF00] text-black hover:bg-[#C1FF00]/90"
+                      >
+                        Create Knowledge Base
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              )}
+            </div>
           </div>
         ) : (
-          // Chat Interface
-          <div className="h-[calc(100vh-2rem)] flex flex-col relative">
-            <DotPattern
-              className={cn(
-                "absolute inset-0 w-full h-full opacity-20",
-                "[mask-image:radial-gradient(100% 100% at center center,white,transparent)]"
-              )}
-            />
-
-            <TooltipProvider>
-              <div className="flex justify-between pb-4 sticky top-0 bg-black z-20">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <ShimmerButton
-                      onClick={() => dispatch(resetChat())}
-                      className="p-3 text-white flex items-center gap-2"
-                    >
-                      Start New Chat
-                    </ShimmerButton>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Start New Creative Chat</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <ShimmerButton
-                  onClick={() => setShowChat(false)}
-                  className="p-3 text-white flex items-center gap-2"
-                >
-                  Back to Dashboard
-                </ShimmerButton>
-              </div>
-            </TooltipProvider>
-
-            <div className="flex-1 overflow-y-auto">
-              <div className="max-w-4xl mx-auto px-4">
-                {messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-64 text-center">
-                    <Brain className="h-16 w-16 text-[#C1FF00] mb-4" />
-                    <h3 className="text-xl font-bold text-white mb-2">
-                      Start a Creative Conversation
-                    </h3>
-                    <p className="text-gray-400 max-w-md">
-                      Ask questions, create diagrams, or explore your knowledge
-                      base with AI assistance.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="pb-20">
-                    <MessageList messages={messages} loading={isLoading} />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-sm py-4 border-t border-[#C1FF00]/20">
-              <div className="max-w-3xl mx-auto px-4">
-                <PlaceholdersAndVanishInput
-                  placeholders={placeholders}
-                  onChange={handleInputChange}
-                  onSubmit={handleFormSubmit}
-                  onSwitchChange={handleSwitchChange}
-                />
-              </div>
-            </div>
-          </div>
+          <ChatInterface
+            onBackToDashboard={() => setShowChat(false)}
+            selectedRepository={selectedRepository}
+          />
         )}
       </motion.main>
+
+      <CreateKnowledgebaseModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreate={handleCreateKnowledgebase}
+      />
     </div>
   );
 }

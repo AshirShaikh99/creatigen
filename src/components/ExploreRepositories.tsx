@@ -1,68 +1,59 @@
 "use client";
 
 import type React from "react";
+import { motion } from "framer-motion";
+import { Database, Calendar } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { GitBranch, Search } from "lucide-react";
-
-export function ExploreRepositoriesDialog({
-  children,
-}: {
-  children?: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children || (
-          <Button className="bg-amber-600 hover:bg-amber-700">
-            <GitBranch className="mr-2 h-4 w-4" />
-            Explore Repositories
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md border border-amber-500/20 bg-[#0F0A05]/90 backdrop-blur-xl text-white">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <GitBranch className="h-5 w-5 text-amber-400" />
-            Explore Repositories
-          </DialogTitle>
-        </DialogHeader>
-        <div className="space-y-6 py-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <Input
-              placeholder="Search repositories..."
-              className="bg-white/5 border-amber-500/20 text-white pl-10 placeholder:text-gray-500"
-            />
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm text-gray-400">No repositories found</p>
-            <p className="text-sm text-gray-400">
-              Create your first knowledge base to get started
-            </p>
-          </div>
-        </div>
-        <div className="flex justify-end">
-          <Button
-            variant="outline"
-            onClick={() => setOpen(false)}
-            className="border-amber-500/20 text-gray-300 hover:bg-amber-500/10 hover:text-white"
-          >
-            Close
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
+interface Repository {
+  id: string;
+  name: string;
+  description: string;
+  dateCreated: string;
+  documentCount: number;
 }
+
+interface RepositoryListProps {
+  repositories: Repository[];
+  onSelectRepository: (id: string) => void;
+}
+
+export const RepositoryList: React.FC<RepositoryListProps> = ({
+  repositories,
+  onSelectRepository,
+}) => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {repositories.map((repo) => (
+        <motion.div
+          key={repo.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Card
+            className="bg-gray-900 border-[#C1FF00]/20 hover:border-[#C1FF00]/50 transition-colors cursor-pointer"
+            onClick={() => onSelectRepository(repo.id)}
+          >
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-white mb-2">
+                {repo.name}
+              </h3>
+              <p className="text-gray-400 mb-4">{repo.description}</p>
+              <div className="flex items-center justify-between text-sm text-gray-500">
+                <div className="flex items-center">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  {repo.dateCreated}
+                </div>
+                <div className="flex items-center">
+                  <Database className="w-4 h-4 mr-1" />
+                  {repo.documentCount} docs
+                </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      ))}
+    </div>
+  );
+};

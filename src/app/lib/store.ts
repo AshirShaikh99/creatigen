@@ -1,19 +1,24 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import chatReducer from "./messages/messageSlice";
+import knowledgebaseReducer from "./knowledgebase/knowledgebaseSlice";
 
 const persistConfig = {
   key: "root",
   storage,
+  whitelist: ["chat", "knowledgebase"], // Specify which reducers to persist
 };
 
-const persistedReducer = persistReducer(persistConfig, chatReducer);
+const rootReducer = combineReducers({
+  chat: chatReducer,
+  knowledgebase: knowledgebaseReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: {
-    chat: persistedReducer,
-  },
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
