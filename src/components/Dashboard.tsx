@@ -51,7 +51,7 @@ const features = [
     icon: HelpCircle,
     title: "Creative Agent",
     description: "Get insights",
-    href: "/advice",
+    href: "/creative-agent",
   },
 ];
 
@@ -145,6 +145,8 @@ export function Dashboard() {
                         } else if (feature.title === "Dashboard") {
                           setShowChat(false);
                           setShowDiagramChat(false);
+                        } else if (feature.title === "Creative Agent") {
+                          window.location.href = "/creative-agent";
                         }
                         // Close sidebar on mobile after selection
                         if (window.innerWidth < 1024) {
@@ -225,7 +227,8 @@ export function Dashboard() {
                 </span>
               </h1>
               <p className="text-gray-400">
-                Organize, explore, and interact with your data using AI
+                Creativity with Creatigen. Organize, explore, and bring your
+                innovative ideas to life
               </p>
             </motion.div>
 
@@ -234,7 +237,7 @@ export function Dashboard() {
               {[
                 {
                   icon: Database,
-                  title: "Total Knowledge Bases",
+                  title: "Total Repositories",
                   value: repositories.length,
                   color: "from-[#d8f3dc] to-[#83c5be]",
                 },
