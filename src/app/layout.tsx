@@ -1,6 +1,7 @@
 import type React from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "../styles/scrollbar.css";
 import { Providers } from "./providers";
 import { ClerkProvider } from "@clerk/nextjs";
 

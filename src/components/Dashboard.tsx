@@ -53,6 +53,12 @@ const features = [
     description: "Get insights",
     href: "/creative-agent",
   },
+  {
+    icon: MessageSquare,
+    title: "Creative Chat",
+    description: "Chat with AI assistant",
+    href: "/creative-chat",
+  },
 ];
 
 export function Dashboard() {
@@ -147,6 +153,8 @@ export function Dashboard() {
                           setShowDiagramChat(false);
                         } else if (feature.title === "Creative Agent") {
                           window.location.href = "/creative-agent";
+                        } else if (feature.title === "Creative Chat") {
+                          window.location.href = "/creative-chat";
                         }
                         // Close sidebar on mobile after selection
                         if (window.innerWidth < 1024) {
