@@ -25,7 +25,7 @@ export function useChatSession({
   initialMessages = [],
   persistKey,
 }: UseChatSessionProps = {}) {
-  const [sessionId] = useState<string>(() => {
+  const [sessionId, setSessionId] = useState<string>(() => {
     // Try to restore existing session ID from local storage
     if (persistKey) {
       const storedSession = localStorage.getItem(`${persistKey}_session_id`);
@@ -82,6 +82,10 @@ export function useChatSession({
 
   const clearMessages = useCallback(
     (welcomeMessage?: string) => {
+      // Generate a new session ID for a new chat
+      const newSessionId = uuidv4();
+      setSessionId(newSessionId);
+
       if (welcomeMessage) {
         setMessages([
           {
@@ -98,6 +102,8 @@ export function useChatSession({
       // Clear persisted messages if using persistence
       if (persistKey) {
         localStorage.removeItem(`${persistKey}_messages`);
+        // Update the session ID in localStorage
+        localStorage.setItem(`${persistKey}_session_id`, newSessionId);
       }
     },
     [persistKey]

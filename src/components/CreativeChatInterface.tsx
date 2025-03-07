@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import { Send } from "lucide-react";
+import { Send, PlusCircle, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChatSession } from "@/hooks/useChatSession";
 import ReactMarkdown from "react-markdown";
@@ -49,9 +49,25 @@ export default function CreativeChatInterface() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-120px)]">
+    <div className="flex flex-col h-[calc(100vh-56px)] bg-black">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-[#1A1A1A]">
+        <button
+          onClick={() => {
+            clearMessages(
+              `👋 Welcome to the Creative Chat! I can help you brainstorm ideas and provide creative assistance. What would you like to discuss today?`
+            );
+            inputRef.current?.focus();
+          }}
+          className="flex items-center gap-2 bg-[#2A2A2A] hover:bg-[#3A3A3A] text-white rounded-lg py-2 px-4 text-sm font-medium transition-colors"
+        >
+          <PlusCircle className="h-4 w-4" />
+          New Chat
+        </button>
+      </div>
+
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto space-y-6 mb-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -122,29 +138,31 @@ export default function CreativeChatInterface() {
       </div>
 
       {/* Input Area */}
-      <div className="relative">
-        <input
-          ref={inputRef}
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyPress}
-          placeholder="Describe what you want to discuss..."
-          className="w-full bg-[#111] border border-[#2A2A2A] rounded-lg py-3 px-4 pr-12 text-white focus:outline-none focus:border-gray-600 placeholder-gray-500"
-          disabled={isLoading}
-        />
-        <button
-          onClick={() => sendMessage(inputValue)}
-          disabled={isLoading || !inputValue.trim()}
-          className={cn(
-            "absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full",
-            !inputValue.trim() || isLoading
-              ? "opacity-50 cursor-not-allowed"
-              : "opacity-100 text-white"
-          )}
-        >
-          <Send className="h-5 w-5" />
-        </button>
+      <div className="p-4 border-t border-[#1A1A1A]">
+        <div className="relative">
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyPress}
+            placeholder="Message Creative Chat..."
+            className="w-full bg-[#111] border border-[#2A2A2A] rounded-lg py-3 px-4 pr-12 text-white focus:outline-none focus:border-gray-600 placeholder-gray-500"
+            disabled={isLoading}
+          />
+          <button
+            onClick={() => sendMessage(inputValue)}
+            disabled={isLoading || !inputValue.trim()}
+            className={cn(
+              "absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full",
+              !inputValue.trim() || isLoading
+                ? "opacity-50 cursor-not-allowed"
+                : "opacity-100 text-white"
+            )}
+          >
+            <Send className="h-5 w-5" />
+          </button>
+        </div>
       </div>
     </div>
   );
