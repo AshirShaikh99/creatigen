@@ -25,6 +25,7 @@ import type { RootState } from "@/app/lib/store";
 import ChatPopup from "@/components/chat-popup";
 import { cn } from "@/lib/utils";
 import { UserButton, SignedIn } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const features = [
   {
@@ -61,6 +62,7 @@ const features = [
 ];
 
 export function Dashboard() {
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showChat, setShowChat] = useState(false);
@@ -88,7 +90,7 @@ export function Dashboard() {
   if (!mounted) return null;
 
   return (
-    <div className="flex min-h-screen bg-black">
+    <div className="flex min-h-screen bg-black overflow-hidden">
       {/* Mobile sidebar toggle */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -102,18 +104,18 @@ export function Dashboard() {
         )}
       </button>
 
-      {/* Sidebar */}
+      {/* Sidebar - fixed position */}
       <motion.aside
         className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0A0A0A] border-r border-[#1A1A1A] transform lg:translate-x-0 transition-all duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:relative`}
+        } overflow-hidden flex flex-col`}
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="border-b border-[#1A1A1A] p-4">
+          <div className="border-b border-[#1A1A1A] p-4 flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#d8f3dc] to-[#83c5be] flex items-center justify-center">
                 <Brain className="h-6 w-6 text-black" />
@@ -122,8 +124,8 @@ export function Dashboard() {
             </div>
           </div>
 
-          {/* Menu */}
-          <div className="flex-1 overflow-y-auto py-4 px-3">
+          {/* Menu - scrollable */}
+          <div className="flex-1 overflow-y-auto py-4 px-3 custom-scrollbar">
             <nav>
               <ul className="space-y-1">
                 {features.map((feature, index) => (
@@ -152,9 +154,9 @@ export function Dashboard() {
                           setShowChat(false);
                           setShowDiagramChat(false);
                         } else if (feature.title === "Creative Agent") {
-                          window.location.href = "/creative-agent";
+                          router.push("/creative-agent");
                         } else if (feature.title === "Creative Chat") {
-                          window.location.href = "/creative-chat";
+                          router.push("/creative-chat");
                         }
                         // Close sidebar on mobile after selection
                         if (window.innerWidth < 1024) {
@@ -192,8 +194,8 @@ export function Dashboard() {
             </nav>
           </div>
 
-          {/* Footer with UserButton */}
-          <div className="border-t border-[#1A1A1A] p-4 space-y-3">
+          {/* Footer with UserButton - stays at the bottom */}
+          <div className="border-t border-[#1A1A1A] p-4 space-y-3 flex-shrink-0">
             <SignedIn>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-400">Account</span>
@@ -219,9 +221,9 @@ export function Dashboard() {
         />
       )}
 
-      {/* Main content */}
+      {/* Main content - scrollable and offset from sidebar */}
       <motion.main
-        className="flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto relative"
+        className="flex-1 h-screen overflow-y-auto pt-4 pb-8 px-4 md:px-8 lg:px-10 ml-0 lg:ml-64 custom-scrollbar"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
