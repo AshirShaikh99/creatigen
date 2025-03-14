@@ -15,6 +15,9 @@ export function SignUpDialog({ isOpen, onClose }: SignUpDialogProps) {
         <DialogTitle className="sr-only">Sign Up</DialogTitle>
         <SignUp
           routing="hash"
+          forceRedirectUrl="/dashboard"
+          fallbackRedirectUrl="/dashboard"
+          signInUrl="/sign-in"
           appearance={{
             elements: {
               rootBox: "w-full",

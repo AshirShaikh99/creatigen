@@ -11,6 +11,7 @@ interface Repository {
   description: string;
   dateCreated: string;
   documentCount: number;
+  uuid?: string;
 }
 
 interface RepositoryListProps {
@@ -24,16 +25,16 @@ export const RepositoryList: React.FC<RepositoryListProps> = ({
 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {repositories.map((repo) => (
+      {repositories.map((repo, index) => (
         <motion.div
-          key={repo.id}
+          key={(repo.uuid || repo.id) + "-" + index}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
           <Card
             className="bg-[#111111] border-[#222222] hover:border-[#C1FF00]/50 transition-colors cursor-pointer"
-            onClick={() => onSelectRepository(repo.id)}
+            onClick={() => onSelectRepository(repo.uuid || repo.id)}
           >
             <div className="p-6">
               <h3 className="text-xl font-semibold text-white mb-2">

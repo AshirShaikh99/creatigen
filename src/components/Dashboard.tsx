@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Brain,
@@ -10,7 +9,6 @@ import {
   HelpCircle,
   Database,
   Activity,
-  LogOut,
   ChevronRight,
   Menu,
   X,
@@ -26,6 +24,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/app/lib/store";
 import ChatPopup from "@/components/chat-popup";
 import { cn } from "@/lib/utils";
+import { UserButton, SignedIn } from "@clerk/nextjs";
 
 const features = [
   {
@@ -79,6 +78,7 @@ export function Dashboard() {
 
   const handleSelectRepository = (id: string) => {
     setSelectedRepositoryPopup(id);
+    setSelectedRepository(id);
   };
 
   useEffect(() => {
@@ -128,7 +128,7 @@ export function Dashboard() {
               <ul className="space-y-1">
                 {features.map((feature, index) => (
                   <motion.li
-                    key={feature.title}
+                    key={`feature-${feature.title}-${index}`}
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: index * 0.1 }}
@@ -192,15 +192,21 @@ export function Dashboard() {
             </nav>
           </div>
 
-          {/* Footer */}
-          <div className="border-t border-[#1A1A1A] p-4">
-            <Button
-              variant="ghost"
-              className="w-full text-gray-400 hover:text-white hover:bg-[#95d5b2]/10 justify-start gap-3"
-            >
-              <LogOut className="h-4 w-4" />
-              <span>Sign Out</span>
-            </Button>
+          {/* Footer with UserButton */}
+          <div className="border-t border-[#1A1A1A] p-4 space-y-3">
+            <SignedIn>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-400">Account</span>
+                <UserButton
+                  afterSignOutUrl="/"
+                  appearance={{
+                    elements: {
+                      userButtonAvatarBox: "w-9 h-9",
+                    },
+                  }}
+                />
+              </div>
+            </SignedIn>
           </div>
         </div>
       </motion.aside>
@@ -248,22 +254,25 @@ export function Dashboard() {
                   title: "Total Repositories",
                   value: repositories.length,
                   color: "from-[#d8f3dc] to-[#83c5be]",
+                  id: "total-repos",
                 },
                 {
                   icon: Activity,
                   title: "Recent Activities",
                   value: 24,
                   color: "from-[#d8f3dc] to-[#83c5be]",
+                  id: "recent-activities",
                 },
                 {
                   icon: MessageSquare,
                   title: "AI Interactions",
                   value: 128,
                   color: "from-[#d8f3dc] to-[#83c5be]",
+                  id: "ai-interactions",
                 },
               ].map((stat, index) => (
                 <motion.div
-                  key={stat.title}
+                  key={`stat-${stat.id}-${index}`}
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.1 * index }}

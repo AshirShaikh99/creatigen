@@ -11,23 +11,20 @@ import {
   Brain,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { SignInDialog } from "@/components/ui/sign-in-dialog";
 import { useState } from "react";
 import { SignUpDialog } from "@/components/ui/sign-up-dialog";
-import { SignIn } from "@clerk/nextjs";
 
 export function LandingPage() {
-  const router = useRouter();
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 
   const handleSignIn = () => {
-    router.push("/sign-in"); // Redirect to Clerk's sign-in page
+    setIsSignInOpen(true); // Open sign-in dialog instead of redirecting
   };
 
   const handleSignUp = () => {
-    router.push("/sign-up"); // Redirect to Clerk's sign-up page
+    setIsSignUpOpen(true); // Open sign-up dialog instead of redirecting
   };
 
   return (
@@ -76,7 +73,7 @@ export function LandingPage() {
             </Button>
           </div>
 
-          {/* Remove SignInDialog and SignUpDialog components as we're using Clerk */}
+          {/* Using Clerk dialogs */}
         </div>
       </header>
 
