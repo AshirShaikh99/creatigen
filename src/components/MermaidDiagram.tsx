@@ -52,14 +52,31 @@ export function MermaidDiagram({ code, className }: MermaidDiagramProps) {
 
         // Generate unique ID for the diagram
         const id = `mermaid-${Math.random().toString(36).substring(2)}`;
+
+        // Log the incoming code for debugging
+        console.log(`Attempting to render diagram with ID: ${id}`);
+        console.log("Code to render:", code);
+
         containerRef.current.innerHTML = `<div id="${id}">${code}</div>`;
 
         // First ensure the code is valid
-        await mermaid.parse(code);
+        try {
+          await mermaid.parse(code);
+          console.log("Mermaid syntax validation passed");
+        } catch (parseError) {
+          console.error("Mermaid syntax validation failed:", parseError);
+          throw new Error(`Invalid Mermaid syntax: ${parseError}`);
+        }
 
         // Render the diagram
-        const { svg } = await mermaid.render(id, code);
-        containerRef.current.innerHTML = svg;
+        try {
+          const { svg } = await mermaid.render(id, code);
+          containerRef.current.innerHTML = svg;
+          console.log("Mermaid diagram rendered successfully");
+        } catch (renderError) {
+          console.error("Mermaid rendering failed:", renderError);
+          throw new Error(`Failed to render diagram: ${renderError}`);
+        }
 
         // Style the SVG
         const svgElement = containerRef.current.querySelector("svg");
@@ -69,10 +86,16 @@ export function MermaidDiagram({ code, className }: MermaidDiagramProps) {
           svgElement.style.height = "auto";
           svgElement.setAttribute("width", "100%");
           svgElement.setAttribute("height", "100%");
+        } else {
+          console.warn("No SVG element found after rendering");
         }
       } catch (err) {
         console.error("Failed to render Mermaid diagram:", err);
-        setError("Failed to render diagram. Please check your syntax.");
+        setError(
+          `Failed to render diagram: ${
+            err instanceof Error ? err.message : String(err)
+          }`
+        );
       } finally {
         setIsLoading(false);
       }

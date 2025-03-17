@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { MermaidDiagram } from "./MermaidDiagram";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -133,9 +134,6 @@ export default function DiagramChatInterface({
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
-  const [selectedDiagramType, setSelectedDiagramType] = useState<string | null>(
-    null
-  );
   const [fullscreenDiagram, setFullscreenDiagram] = useState<string | null>(
     null
   );
@@ -174,72 +172,138 @@ export default function DiagramChatInterface({
     setInput("");
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      let responseContent = "";
-      let diagramType = "";
-      let diagramCode = "";
+    // Log the user input
+    console.log("User diagram request:", input);
 
-      // Check if user is asking for a specific diagram type
-      const lowerInput = input.toLowerCase();
+    // Call the API instead of using local examples
+    fetch("/api/generate-diagram", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt: input }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Diagram API raw response:", data);
 
-      if (lowerInput.includes("sequence") || lowerInput.includes("api flow")) {
-        diagramType = "Sequence Diagram";
-        diagramCode = exampleDiagrams["Sequence Diagram"];
-        responseContent =
-          "Here's a sequence diagram showing API interaction flow:";
-      } else if (
-        lowerInput.includes("flow") ||
-        lowerInput.includes("process")
-      ) {
-        diagramType = "Flowchart";
-        diagramCode = exampleDiagrams["Flowchart"];
-        responseContent = "I've created a flowchart based on your request:";
-      } else if (
-        lowerInput.includes("entity") ||
-        lowerInput.includes("database") ||
-        lowerInput.includes("er")
-      ) {
-        diagramType = "Entity Relationship";
-        diagramCode = exampleDiagrams["Entity Relationship"];
-        responseContent = "Here's an entity relationship diagram:";
-      } else if (
-        lowerInput.includes("class") ||
-        lowerInput.includes("object")
-      ) {
-        diagramType = "Class Diagram";
-        diagramCode = exampleDiagrams["Class Diagram"];
-        responseContent = "I've created a class diagram for you:";
-      } else if (
-        lowerInput.includes("state") ||
-        lowerInput.includes("transition")
-      ) {
-        diagramType = "State Diagram";
-        diagramCode = exampleDiagrams["State Diagram"];
-        responseContent = "Here's a state diagram showing transitions:";
-      } else {
-        // Default to sequence diagram if no specific type is detected
-        diagramType = "Sequence Diagram";
-        diagramCode = exampleDiagrams["Sequence Diagram"];
-        responseContent =
-          "I've created a sequence diagram based on your request:";
-      }
+        // Show the raw response in a toast for debugging
+        toast("API Response", {
+          description: "Check console for full API response",
+          action: {
+            label: "View",
+            onClick: () => console.log("Full API response:", data),
+          },
+        });
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: responseContent,
-        timestamp: new Date(),
-        diagram: {
-          type: diagramType,
-          code: diagramCode,
-          rendered: false,
-        },
-      };
+        let diagramType = "Unknown";
+        let diagramCode = "";
+        let responseContent = "I've created a diagram based on your request:";
 
-      setMessages((prev) => [...prev, assistantMessage]);
-      setIsTyping(false);
-    }, 1500);
+        // Log the structure to understand what we're working with
+        console.log("Response structure:", {
+          isString: typeof data === "string",
+          hasResponse: data && typeof data.response !== "undefined",
+          hasData: data && typeof data.data !== "undefined",
+          hasCode: data && typeof data.code !== "undefined",
+          hasSyntax: data && typeof data.syntax !== "undefined",
+        });
+
+        // Extract diagram code based on response structure
+        if (data && typeof data.syntax === "string") {
+          diagramCode = data.syntax;
+          diagramType = data.type || "Flowchart";
+        } else if (typeof data.response === "string") {
+          diagramCode = data.response;
+          diagramType = data.type || "Flowchart";
+        } else if (typeof data === "string") {
+          diagramCode = data;
+        }
+
+        // If we received JSON instead of Mermaid code, show it in the console
+        try {
+          // Only try to parse if it looks like JSON
+          if (
+            diagramCode.trim().startsWith("{") ||
+            diagramCode.trim().startsWith("[")
+          ) {
+            const jsonContent = JSON.parse(diagramCode);
+            console.log(
+              "API returned JSON instead of Mermaid syntax:",
+              jsonContent
+            );
+            diagramCode = `graph TD
+    A[API Response] --> B[Returned JSON]
+    B --> C[Not Mermaid Syntax]`;
+          }
+        } catch {
+          // Not JSON, might be Mermaid syntax already
+          console.log("Diagram code appears to be valid Mermaid syntax");
+        }
+
+        // Clean the Mermaid code by removing any Markdown code block markers
+        if (diagramCode.includes("```")) {
+          console.log("Cleaning up code block markers from diagram code");
+          diagramCode = diagramCode
+            .replace(/```(?:mermaid|)?\n?/g, "")
+            .replace(/```\n?$/g, "")
+            .trim();
+        }
+
+        console.log("Final diagram code to render:", diagramCode);
+
+        // Fallback to example diagram if no valid response
+        if (!diagramCode) {
+          console.warn(
+            "No valid diagram code received from API, using fallback"
+          );
+          diagramType = "Flowchart";
+          diagramCode = exampleDiagrams["Flowchart"];
+          responseContent =
+            "I couldn't generate a diagram from the API. Here's an example flowchart instead:";
+        }
+
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: responseContent,
+          timestamp: new Date(),
+          diagram: {
+            type: diagramType,
+            code: diagramCode,
+            rendered: false,
+          },
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+        setIsTyping(false);
+      })
+      .catch((error) => {
+        console.error("Error calling diagram API:", error);
+
+        // Use example diagrams as fallback
+        const diagramType = "Flowchart";
+        const diagramCode = exampleDiagrams["Flowchart"];
+
+        // Log the fallback being used
+        console.log("Using fallback diagram due to API error");
+
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content:
+            "There was a problem generating your diagram. Here's a fallback example:",
+          timestamp: new Date(),
+          diagram: {
+            type: diagramType,
+            code: diagramCode,
+            rendered: false,
+          },
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+        setIsTyping(false);
+      });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -361,7 +425,6 @@ export default function DiagramChatInterface({
                 key={type.name}
                 className="flex items-center gap-2 hover:bg-[#1A1A1A] cursor-pointer"
                 onClick={() => {
-                  setSelectedDiagramType(type.name);
                   setInput(`Create a ${type.name.toLowerCase()} for me`);
                 }}
               >
