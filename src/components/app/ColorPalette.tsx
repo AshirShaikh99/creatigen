@@ -41,10 +41,11 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
         isSelected
           ? "border-purple-500 shadow-purple-500/30"
           : "border-purple-500/20"
-      } shadow-lg relative group/palette transition-all duration-300 ${
+      } shadow-lg relative group/palette transition-all duration-500 ${
         onSelect ? "hover:border-purple-400/50 cursor-pointer" : ""
       }`}
       onClick={() => onSelect && onSelect(colors, name || "Color Palette", id)}
+      style={{ transition: "all 0.5s ease-in-out" }}
     >
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-medium text-gray-200">
@@ -56,7 +57,7 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
           </span>
         )}
         {onSelect && !isSelected && (
-          <span className="text-xs px-2 py-1 bg-purple-500/0 text-purple-500/0 rounded-full group-hover/palette:bg-purple-500/20 group-hover/palette:text-purple-300 transition-all duration-300">
+          <span className="text-xs px-2 py-1 bg-purple-500/0 text-purple-500/0 rounded-full group-hover/palette:bg-purple-500/20 group-hover/palette:text-purple-300 transition-all duration-500">
             Select
           </span>
         )}
@@ -69,8 +70,11 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
               onClick={(e) => handleCopyColor(color, index, e)}
             >
               <div
-                className="w-16 h-16 rounded-md shadow-lg cursor-pointer ring-2 ring-transparent group-hover:ring-white/30 transition-all duration-200 hover:scale-110 active:scale-95"
-                style={{ backgroundColor: color }}
+                className="w-16 h-16 rounded-md shadow-lg cursor-pointer ring-2 ring-transparent group-hover:ring-white/30 transition-all duration-500 hover:scale-110 active:scale-95"
+                style={{
+                  backgroundColor: color,
+                  transition: "all 0.5s cubic-bezier(0.25, 1, 0.5, 1)",
+                }}
                 title={`Click to copy: ${color}`}
               />
 
@@ -94,7 +98,7 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({
               )}
 
               {/* Hover overlay with copy icon */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-md opacity-0 group-hover:opacity-100 transition-all duration-500">
                 <svg
                   className="w-6 h-6 text-white"
                   fill="none"

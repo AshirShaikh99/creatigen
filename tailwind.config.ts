@@ -67,19 +67,19 @@ module.exports = {
           to: { height: 0 },
         },
         fadeIn: {
-          "0%": { opacity: 0, transform: "scale(0.5)" },
+          "0%": { opacity: 0, transform: "scale(0.95)" },
           "100%": { opacity: 1, transform: "scale(1)" },
         },
         fadeOut: {
           "0%": { opacity: 1, transform: "scale(1)" },
-          "100%": { opacity: 0, transform: "scale(0.5)" },
+          "100%": { opacity: 0, transform: "scale(0.95)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        fadeIn: "fadeIn 0.2s ease-out forwards",
-        fadeOut: "fadeOut 0.2s ease-in forwards",
+        fadeIn: "fadeIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards",
+        fadeOut: "fadeOut 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

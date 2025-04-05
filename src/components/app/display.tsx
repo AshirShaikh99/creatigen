@@ -110,6 +110,26 @@ function Display() {
     (message) => message.type === MessageTypeEnum.TRANSCRIPT
   ) as TranscriptMessage[];
 
+  // Function to filter out color codes from transcript text
+  const filterColorCodes = (text: string): string => {
+    // Replace hex color codes
+    let filtered = text.replace(/#([0-9A-Fa-f]{3}){1,2}\b/g, "[color]");
+
+    // Replace RGB color values
+    filtered = filtered.replace(
+      /rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)/gi,
+      "[color]"
+    );
+
+    // Replace sequences of numbers that might be color values
+    filtered = filtered.replace(
+      /(\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3})/g,
+      "[color values]"
+    );
+
+    return filtered;
+  };
+
   // Auto-scroll to the bottom when new messages arrive
   useEffect(() => {
     const scrollToBottom = () => {
@@ -265,47 +285,55 @@ function Display() {
         let shouldGenerateColors = false;
 
         if (isAssistantMessage) {
-          // For assistant messages, we want to generate palettes when it mentions colors
-          // This ensures we show palettes when the AI suggests colors
-          shouldGenerateColors =
-            // If the assistant mentions color keywords
-            hasColorKeyword ||
-            hasSpecificColor ||
-            // Or if there are explicit hex/RGB colors in the message
-            hexColors.length > 0 ||
-            rgbColors.length > 0;
+          // For assistant messages, we need VERY specific triggers
+          // to avoid accidental palette generation
 
-          // Look for phrases that indicate the assistant is suggesting colors
-          const suggestionPhrases = [
-            "here are",
-            "here is",
-            "i've created",
-            "i have created",
-            "generated",
-            "created",
-            "made",
-            "designed",
-            "suggested",
-            "palette",
-            "palettes",
-            "color scheme",
-            "color combination",
+          // Strong indication phrases that clearly suggest the AI is showing colors
+          const strongIndicationPhrases = [
+            "here are some color",
+            "here's a color palette",
+            "i've created these color",
+            "i have created some color",
+            "generated these color",
+            "here are the color palette",
+            "showing you some color",
+            "displaying color palette",
           ];
 
-          const isSuggestingColors = suggestionPhrases.some((phrase) =>
+          // Check if any strong indication phrases are present
+          const hasStrongIndication = strongIndicationPhrases.some((phrase) =>
             lowerTranscript.includes(phrase)
           );
 
-          // If the assistant is clearly suggesting colors, prioritize this
-          if (isSuggestingColors && (hasColorKeyword || hasSpecificColor)) {
-            shouldGenerateColors = true;
-          }
-        } else {
-          // For user messages, only generate if there's an explicit request
+          // Only generate colors if there's a strong indication AND specific color mentions
+          // OR if there are explicit hex/RGB colors in the message
           shouldGenerateColors =
+            (hasStrongIndication && (hasColorKeyword || hasSpecificColor)) ||
+            hexColors.length > 0 ||
+            rgbColors.length > 0;
+        } else {
+          // For user messages, require VERY explicit requests
+          // Must have a clear action word AND color-related terms
+          const explicitColorRequests = [
+            "show me color",
+            "generate color",
+            "create color palette",
+            "make color palette",
+            "give me color",
+            "show color palette",
+            "need color palette",
+            "want color palette",
+          ];
+
+          const hasExplicitRequest = explicitColorRequests.some((phrase) =>
+            lowerTranscript.includes(phrase)
+          );
+
+          shouldGenerateColors =
+            hasExplicitRequest ||
             (hasActionKeyword &&
-              (hasColorKeyword || hasSpecificColor || forceNewPalettes)) ||
-            // Or if there are explicit hex/RGB colors in the message
+              hasColorKeyword &&
+              (hasSpecificColor || forceNewPalettes)) ||
             hexColors.length > 0 ||
             rgbColors.length > 0;
         }
@@ -476,32 +504,81 @@ function Display() {
           }
 
           // Generate unique IDs for new palettes
-          const timestampedPalettes = newPalettes.map((palette) => ({
+          const timestamp = Date.now();
+          const timestampedPalettes = newPalettes.map((palette, index) => ({
             ...palette,
-            id: `palette-${Date.now()}-${Math.random()
+            id: `palette-${timestamp}-${index}-${Math.random()
               .toString(36)
               .substring(2, 9)}`,
           }));
 
-          // Update current palettes
-          setColorPalettes(timestampedPalettes);
+          // Deduplicate palettes by comparing color arrays
+          const isDuplicate = (
+            palette1: { colors: string[] },
+            palette2: { colors: string[] }
+          ) => {
+            if (palette1.colors.length !== palette2.colors.length) return false;
 
-          // Add to history with timestamp
-          const historyPalettes = timestampedPalettes.map((palette) => ({
-            ...palette,
-            timestamp: Date.now(),
-            id:
-              palette.id ||
-              `palette-${Date.now()}-${Math.random()
-                .toString(36)
-                .substring(2, 9)}`,
-          }));
+            // Check if at least 3 colors match (indicating similar palettes)
+            let matchCount = 0;
+            for (const color1 of palette1.colors) {
+              for (const color2 of palette2.colors) {
+                // Compare colors with some tolerance for slight variations
+                if (areColorsVerySimilar(color1, color2)) {
+                  matchCount++;
+                  break;
+                }
+              }
+            }
 
-          setPaletteHistory((prevHistory) => {
-            // Limit history to 50 palettes to prevent excessive memory usage
-            const combinedHistory = [...historyPalettes, ...prevHistory];
-            return combinedHistory.slice(0, 50);
-          });
+            // If more than 60% of colors match, consider it a duplicate
+            return (
+              matchCount >=
+              Math.min(3, Math.floor(palette1.colors.length * 0.6))
+            );
+          };
+
+          // Filter out any new palettes that are too similar to existing ones
+          const uniquePalettes = timestampedPalettes.filter(
+            (newPalette) =>
+              !colorPalettes.some((existingPalette) =>
+                isDuplicate(newPalette, existingPalette)
+              )
+          );
+
+          // Only update if we have unique palettes
+          if (uniquePalettes.length > 0) {
+            // Update current palettes with a smoother transition
+            // Instead of clearing and then setting, we'll use a crossfade approach
+            // by updating the state directly with the new palettes
+            setColorPalettes(uniquePalettes);
+
+            // Add to history with timestamp
+            const historyPalettes = uniquePalettes.map((palette) => ({
+              ...palette,
+              timestamp: Date.now(),
+              id:
+                palette.id ||
+                `palette-${Date.now()}-${Math.random()
+                  .toString(36)
+                  .substring(2, 9)}`,
+            }));
+
+            // Deduplicate history as well
+            setPaletteHistory((prevHistory) => {
+              // Filter out any palettes from history that are too similar to new ones
+              const filteredHistory = prevHistory.filter(
+                (historyPalette) =>
+                  !historyPalettes.some((newPalette) =>
+                    isDuplicate(historyPalette, newPalette)
+                  )
+              );
+
+              // Limit history to 50 palettes to prevent excessive memory usage
+              const combinedHistory = [...historyPalettes, ...filteredHistory];
+              return combinedHistory.slice(0, 50);
+            });
+          }
         }
       } else if (
         message.type === MessageTypeEnum.FUNCTION_CALL &&
@@ -607,6 +684,41 @@ function Display() {
       .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
   };
 
+  // Helper function to compare two colors for similarity
+  const areColorsVerySimilar = (color1: string, color2: string): boolean => {
+    // Handle invalid colors
+    if (
+      !color1 ||
+      !color2 ||
+      !color1.startsWith("#") ||
+      !color2.startsWith("#")
+    ) {
+      return false;
+    }
+
+    try {
+      // Convert hex to RGB
+      const r1 = parseInt(color1.substring(1, 3), 16);
+      const g1 = parseInt(color1.substring(3, 5), 16);
+      const b1 = parseInt(color1.substring(5, 7), 16);
+
+      const r2 = parseInt(color2.substring(1, 3), 16);
+      const g2 = parseInt(color2.substring(3, 5), 16);
+      const b2 = parseInt(color2.substring(5, 7), 16);
+
+      // Calculate color distance using a simple Euclidean distance in RGB space
+      const distance = Math.sqrt(
+        Math.pow(r1 - r2, 2) + Math.pow(g1 - g2, 2) + Math.pow(b1 - b2, 2)
+      );
+
+      // Colors are considered very similar if their distance is less than 30 (out of 441.67 max distance)
+      return distance < 30;
+    } catch (e) {
+      // If there's any error in parsing, assume they're not similar
+      return false;
+    }
+  };
+
   // Extract RGB colors from text
   const extractRGBColors = (text: string): string[] => {
     // Match RGB format like rgb(255, 0, 0) or rgb(255 0 0)
@@ -672,7 +784,9 @@ function Display() {
                   : "bg-gray-800 mr-auto"
               }`}
             >
-              <p className="text-sm text-gray-200">{message.transcript}</p>
+              <p className="text-sm text-gray-200">
+                {filterColorCodes(message.transcript)}
+              </p>
             </motion.div>
           ))}
 
@@ -700,7 +814,9 @@ function Display() {
                 }`}
               >
                 <p className="text-sm text-gray-300">
-                  {activeTranscript.transcript}
+                  {activeTranscript
+                    ? filterColorCodes(activeTranscript.transcript)
+                    : ""}
                 </p>
               </motion.div>
             )}
@@ -718,29 +834,33 @@ function Display() {
             <h3 className="text-sm font-medium text-purple-400 px-1">
               Selected Palettes
             </h3>
-            <AnimatePresence mode="sync" initial={false}>
-              {selectedPalettes.map((palette, index) => (
-                <motion.div
-                  key={`selected-palette-${palette.id || index}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 30,
-                  }}
-                >
-                  <ColorPalette
-                    colors={palette.colors}
-                    name={palette.name}
-                    id={palette.id}
-                    onSelect={handleSelectPalette}
-                    isSelected={true}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
+            <div className="relative">
+              <AnimatePresence mode="sync" initial={false}>
+                {selectedPalettes.map((palette, index) => (
+                  <motion.div
+                    key={`selected-palette-${palette.id || index}`}
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{
+                      opacity: { duration: 0.8, ease: "easeInOut" },
+                      scale: { duration: 0.8, ease: "easeInOut" },
+                      layout: { duration: 0.8, ease: "easeInOut" },
+                    }}
+                    layout
+                    className="mb-3"
+                  >
+                    <ColorPalette
+                      colors={palette.colors}
+                      name={palette.name}
+                      id={palette.id}
+                      onSelect={handleSelectPalette}
+                      isSelected={true}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
         )}
 
@@ -750,75 +870,111 @@ function Display() {
             <h3 className="text-sm font-medium text-gray-400 px-1">
               Suggested Palettes
             </h3>
-            <AnimatePresence mode="sync" initial={false}>
-              {colorPalettes.map((palette, index) => (
-                <motion.div
-                  key={`palette-${palette.id || index}`}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 30,
-                  }}
-                >
-                  <ColorPalette
-                    colors={palette.colors}
-                    name={palette.name}
-                    id={palette.id}
-                    onSelect={handleSelectPalette}
-                    isSelected={selectedPalettes.some(
-                      (selected) =>
-                        selected.id === palette.id ||
-                        (selected.colors.join(",") ===
-                          palette.colors.join(",") &&
-                          selected.name === palette.name)
-                    )}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
+            <div className="relative">
+              <AnimatePresence mode="sync" initial={false}>
+                {colorPalettes.map((palette, index) => (
+                  <motion.div
+                    key={`palette-${palette.id || index}`}
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{
+                      opacity: { duration: 0.8, ease: "easeInOut" },
+                      scale: { duration: 0.8, ease: "easeInOut" },
+                      layout: { duration: 0.8, ease: "easeInOut" },
+                    }}
+                    layout
+                    className="mb-3"
+                  >
+                    <ColorPalette
+                      colors={palette.colors}
+                      name={palette.name}
+                      id={palette.id}
+                      onSelect={handleSelectPalette}
+                      isSelected={selectedPalettes.some(
+                        (selected) =>
+                          selected.id === palette.id ||
+                          (selected.colors.join(",") ===
+                            palette.colors.join(",") &&
+                            selected.name === palette.name)
+                      )}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
         )}
 
         {/* History Toggle Button */}
-        {paletteHistory.length > 0 && (
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="flex items-center justify-center w-full py-2 px-4 rounded-md bg-purple-500/10 hover:bg-purple-500/20 transition-colors duration-200 text-sm text-purple-300"
-          >
-            {showHistory
-              ? "Hide Palette History"
-              : "Show All Generated Palettes"}
-          </button>
-        )}
+        <AnimatePresence>
+          {paletteHistory.length > 0 && (
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.3 }}
+              onClick={() => setShowHistory(!showHistory)}
+              className="flex items-center justify-center w-full py-2 px-4 rounded-md bg-purple-500/10 hover:bg-purple-500/20 transition-all duration-200 text-sm text-purple-300"
+            >
+              <span>
+                {showHistory
+                  ? "Hide Palette History"
+                  : "Show All Generated Palettes"}
+              </span>
+              <motion.span
+                animate={{ rotate: showHistory ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+                className="ml-2"
+              >
+                {showHistory ? "↑" : "↓"}
+              </motion.span>
+            </motion.button>
+          )}
+        </AnimatePresence>
 
         {/* Palette History */}
-        {showHistory && paletteHistory.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-400 px-1">
-              All Generated Palettes
-            </h3>
-            <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500/20 scrollbar-track-transparent">
-              {paletteHistory.map((palette) => (
-                <ColorPalette
-                  key={palette.id}
-                  colors={palette.colors}
-                  name={palette.name}
-                  id={palette.id}
-                  onSelect={handleSelectPalette}
-                  isSelected={selectedPalettes.some(
-                    (selected) =>
-                      selected.id === palette.id ||
-                      (selected.colors.join(",") === palette.colors.join(",") &&
-                        selected.name === palette.name)
-                  )}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {showHistory && paletteHistory.length > 0 && (
+            <motion.div
+              className="space-y-3"
+              initial={{ opacity: 0, height: 0, overflow: "hidden" }}
+              animate={{ opacity: 1, height: "auto", overflow: "visible" }}
+              exit={{ opacity: 0, height: 0, overflow: "hidden" }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <h3 className="text-sm font-medium text-gray-400 px-1">
+                All Generated Palettes
+              </h3>
+              <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500/20 scrollbar-track-transparent">
+                <AnimatePresence initial={false}>
+                  {paletteHistory.map((palette) => (
+                    <motion.div
+                      key={palette.id}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                    >
+                      <ColorPalette
+                        colors={palette.colors}
+                        name={palette.name}
+                        id={palette.id}
+                        onSelect={handleSelectPalette}
+                        isSelected={selectedPalettes.some(
+                          (selected) =>
+                            selected.id === palette.id ||
+                            (selected.colors.join(",") ===
+                              palette.colors.join(",") &&
+                              selected.name === palette.name)
+                        )}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
