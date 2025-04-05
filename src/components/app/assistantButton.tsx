@@ -1,56 +1,64 @@
 import { CALL_STATUS, useVapi } from "@/hooks/useVapi";
 import { Loader2, Mic, Square } from "lucide-react";
 import { Button } from "../ui/button";
+import { motion } from "framer-motion";
 
 const AssistantButton = ({
   toggleCall,
   callStatus,
   audioLevel = 0,
 }: Partial<ReturnType<typeof useVapi>>) => {
-  const color =
-    callStatus === CALL_STATUS.ACTIVE
-      ? "red"
-      : callStatus === CALL_STATUS.LOADING
-      ? "orange"
-      : "green";
-  const buttonStyle = {
-    borderRadius: "50%",
-    width: "50px",
-    height: "50px",
-    color: "white",
-    border: "none",
-    boxShadow: `1px 1px ${10 + audioLevel * 40}px ${
-      audioLevel * 10
-    }px ${color}`,
-    backgroundColor:
-      callStatus === CALL_STATUS.ACTIVE
-        ? "red"
-        : callStatus === CALL_STATUS.LOADING
-        ? "orange"
-        : "green",
-    cursor: "pointer",
+  // Calculate the pulse animation based on audio level
+  const pulseScale = 1 + audioLevel * 0.5;
+
+  // Determine button color based on call status
+  const getButtonClasses = () => {
+    switch (callStatus) {
+      case CALL_STATUS.ACTIVE:
+        return "bg-red-600 hover:bg-red-700 text-white";
+      case CALL_STATUS.LOADING:
+        return "bg-purple-400 hover:bg-purple-500 text-white";
+      default:
+        return "bg-purple-500 hover:bg-purple-600 text-white";
+    }
   };
 
   return (
-    <Button
-      style={buttonStyle}
-      className={`transition ease-in-out ${
-        callStatus === CALL_STATUS.ACTIVE
-          ? "bg-red-500 hover:bg-red-700"
-          : callStatus === CALL_STATUS.LOADING
-          ? "bg-orange-500 hover:bg-orange-700"
-          : "bg-green-500 hover:bg-green-700"
-      } flex items-center justify-center`}
-      onClick={toggleCall}
-    >
-      {callStatus === CALL_STATUS.ACTIVE ? (
-        <Square />
-      ) : callStatus === CALL_STATUS.LOADING ? (
-        <Loader2 className="animate-spin" />
-      ) : (
-        <Mic />
+    <div className="relative">
+      {/* Pulse animation for active call */}
+      {callStatus === CALL_STATUS.ACTIVE && (
+        <motion.div
+          className="absolute inset-0 rounded-full bg-red-500/20"
+          animate={{
+            scale: [1, pulseScale, 1],
+            opacity: [0.7, 0.3, 0.7],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
       )}
-    </Button>
+
+      {/* Main button */}
+      <Button
+        className={`relative rounded-full w-14 h-14 shadow-lg ${getButtonClasses()} flex items-center justify-center transition-all duration-300 ease-in-out ${
+          callStatus === CALL_STATUS.ACTIVE
+            ? "shadow-red-500/30"
+            : "shadow-purple-500/30"
+        }`}
+        onClick={toggleCall}
+      >
+        {callStatus === CALL_STATUS.ACTIVE ? (
+          <Square className="h-5 w-5" />
+        ) : callStatus === CALL_STATUS.LOADING ? (
+          <Loader2 className="h-6 w-6 animate-spin" />
+        ) : (
+          <Mic className="h-6 w-6" />
+        )}
+      </Button>
+    </div>
   );
 };
 
