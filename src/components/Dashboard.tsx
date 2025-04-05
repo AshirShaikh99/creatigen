@@ -32,6 +32,8 @@ import ChatPopup from "@/components/chat-popup";
 import { cn } from "@/lib/utils";
 import { UserButton, SignedIn } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Assistant } from "@/components/app/assistant";
+import { VoiceTest } from "@/components/VoiceTest";
 
 const features = [
   {
@@ -485,6 +487,16 @@ export function Dashboard() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />
+
+      {/* Voice Test Component */}
+      <div className="fixed bottom-6 right-6 z-50 w-64">
+        <VoiceTest />
+      </div>
+
+      {/* Voice Assistant */}
+      <div className="fixed bottom-6 left-6 z-50">
+        <Assistant />
+      </div>
     </div>
   );
 }
