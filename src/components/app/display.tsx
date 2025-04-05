@@ -35,13 +35,71 @@ const hslToHex = ({ h, s, l }: { h: number; s: number; l: number }): string => {
 function Display() {
   const { messages, activeTranscript } = useVapi();
 
-  // State for color palettes (no history)
+  // State for current color palettes
   const [colorPalettes, setColorPalettes] = useState<
     Array<{
       colors: string[];
       name: string;
+      id?: string;
     }>
   >([]);
+
+  // State for palette history (all generated palettes)
+  const [paletteHistory, setPaletteHistory] = useState<
+    Array<{
+      colors: string[];
+      name: string;
+      id: string;
+      timestamp: number;
+    }>
+  >([]);
+
+  // State for selected palettes
+  const [selectedPalettes, setSelectedPalettes] = useState<
+    Array<{
+      colors: string[];
+      name: string;
+      id?: string;
+    }>
+  >([]);
+
+  // State to toggle history visibility
+  const [showHistory, setShowHistory] = useState(false);
+
+  // Function to handle palette selection
+  const handleSelectPalette = (colors: string[], name: string, id?: string) => {
+    // Generate an ID if one wasn't provided
+    const paletteId =
+      id ||
+      `palette-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
+    // Check if this palette is already selected
+    const isAlreadySelected = selectedPalettes.some(
+      (palette) =>
+        palette.id === paletteId ||
+        (palette.colors.join(",") === colors.join(",") && palette.name === name)
+    );
+
+    if (isAlreadySelected) {
+      // If already selected, remove it
+      setSelectedPalettes(
+        selectedPalettes.filter(
+          (palette) =>
+            !(
+              palette.id === paletteId ||
+              (palette.colors.join(",") === colors.join(",") &&
+                palette.name === name)
+            )
+        )
+      );
+    } else {
+      // Otherwise add it to selected palettes
+      setSelectedPalettes([
+        ...selectedPalettes,
+        { colors, name, id: paletteId },
+      ]);
+    }
+  };
 
   // Create refs for the messages container and end element to enable auto-scrolling
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -93,22 +151,24 @@ function Display() {
 
   useEffect(() => {
     const onMessageUpdate = (message: Message) => {
-      // For transcript messages, we want to process each one to check for color requests
-      // For other message types, we'll use a unique ID to avoid duplicates
-      if (message.type !== MessageTypeEnum.TRANSCRIPT) {
-        // Generate a unique ID for this message
-        const messageId = `${message.type}-${Date.now()}`;
+      // Generate a unique ID for this message
+      const messageId = `${message.type}-${Date.now()}`;
 
-        // Skip if we've already processed this message
-        if (messageId === lastProcessedMessageRef.current) {
-          return;
-        }
-
-        // Update the last processed message ID
-        lastProcessedMessageRef.current = messageId;
+      // Skip if we've already processed this message
+      if (messageId === lastProcessedMessageRef.current) {
+        return;
       }
+
+      // Update the last processed message ID
+      lastProcessedMessageRef.current = messageId;
+
       // Check for transcript messages that mention colors or palettes
+      // We need to check both user messages (for requests) and assistant messages (for suggestions)
       if (message.type === MessageTypeEnum.TRANSCRIPT) {
+        const transcriptMessage = message as TranscriptMessage;
+        const isAssistantMessage = transcriptMessage.role === "assistant";
+
+        // Process both user requests and assistant suggestions
         const transcript = (message as TranscriptMessage).transcript;
         const lowerTranscript = transcript.toLowerCase();
 
@@ -201,13 +261,54 @@ function Display() {
           "change",
         ].some((keyword) => lowerTranscript.includes(keyword));
 
-        // Only generate colors if there's an action keyword AND either a color keyword or specific color
-        const shouldGenerateColors =
-          (hasActionKeyword &&
-            (hasColorKeyword || hasSpecificColor || forceNewPalettes)) ||
-          // Or if there are explicit hex/RGB colors in the message
-          hexColors.length > 0 ||
-          rgbColors.length > 0;
+        // Different logic for assistant vs user messages
+        let shouldGenerateColors = false;
+
+        if (isAssistantMessage) {
+          // For assistant messages, we want to generate palettes when it mentions colors
+          // This ensures we show palettes when the AI suggests colors
+          shouldGenerateColors =
+            // If the assistant mentions color keywords
+            hasColorKeyword ||
+            hasSpecificColor ||
+            // Or if there are explicit hex/RGB colors in the message
+            hexColors.length > 0 ||
+            rgbColors.length > 0;
+
+          // Look for phrases that indicate the assistant is suggesting colors
+          const suggestionPhrases = [
+            "here are",
+            "here is",
+            "i've created",
+            "i have created",
+            "generated",
+            "created",
+            "made",
+            "designed",
+            "suggested",
+            "palette",
+            "palettes",
+            "color scheme",
+            "color combination",
+          ];
+
+          const isSuggestingColors = suggestionPhrases.some((phrase) =>
+            lowerTranscript.includes(phrase)
+          );
+
+          // If the assistant is clearly suggesting colors, prioritize this
+          if (isSuggestingColors && (hasColorKeyword || hasSpecificColor)) {
+            shouldGenerateColors = true;
+          }
+        } else {
+          // For user messages, only generate if there's an explicit request
+          shouldGenerateColors =
+            (hasActionKeyword &&
+              (hasColorKeyword || hasSpecificColor || forceNewPalettes)) ||
+            // Or if there are explicit hex/RGB colors in the message
+            hexColors.length > 0 ||
+            rgbColors.length > 0;
+        }
 
         // If we should generate color palettes
         if (shouldGenerateColors) {
@@ -374,8 +475,33 @@ function Display() {
             }
           }
 
-          // Replace existing palettes with new ones (no history)
-          setColorPalettes(newPalettes);
+          // Generate unique IDs for new palettes
+          const timestampedPalettes = newPalettes.map((palette) => ({
+            ...palette,
+            id: `palette-${Date.now()}-${Math.random()
+              .toString(36)
+              .substring(2, 9)}`,
+          }));
+
+          // Update current palettes
+          setColorPalettes(timestampedPalettes);
+
+          // Add to history with timestamp
+          const historyPalettes = timestampedPalettes.map((palette) => ({
+            ...palette,
+            timestamp: Date.now(),
+            id:
+              palette.id ||
+              `palette-${Date.now()}-${Math.random()
+                .toString(36)
+                .substring(2, 9)}`,
+          }));
+
+          setPaletteHistory((prevHistory) => {
+            // Limit history to 50 palettes to prevent excessive memory usage
+            const combinedHistory = [...historyPalettes, ...prevHistory];
+            return combinedHistory.slice(0, 50);
+          });
         }
       } else if (
         message.type === MessageTypeEnum.FUNCTION_CALL &&
@@ -584,26 +710,114 @@ function Display() {
         </AnimatePresence>
       </div>
 
-      {/* Color Palettes */}
-      <div className="space-y-4 mt-4">
+      {/* Color Palettes Section */}
+      <div className="space-y-6 mt-4">
+        {/* Selected Palettes */}
+        {selectedPalettes.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-purple-400 px-1">
+              Selected Palettes
+            </h3>
+            <AnimatePresence mode="sync" initial={false}>
+              {selectedPalettes.map((palette, index) => (
+                <motion.div
+                  key={`selected-palette-${palette.id || index}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30,
+                  }}
+                >
+                  <ColorPalette
+                    colors={palette.colors}
+                    name={palette.name}
+                    id={palette.id}
+                    onSelect={handleSelectPalette}
+                    isSelected={true}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
+
+        {/* Current Palettes */}
         {colorPalettes.length > 0 && (
-          <AnimatePresence mode="sync" initial={false}>
-            {colorPalettes.map((palette, index) => (
-              <motion.div
-                key={`palette-${index}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 30,
-                }}
-              >
-                <ColorPalette colors={palette.colors} name={palette.name} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-400 px-1">
+              Suggested Palettes
+            </h3>
+            <AnimatePresence mode="sync" initial={false}>
+              {colorPalettes.map((palette, index) => (
+                <motion.div
+                  key={`palette-${palette.id || index}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30,
+                  }}
+                >
+                  <ColorPalette
+                    colors={palette.colors}
+                    name={palette.name}
+                    id={palette.id}
+                    onSelect={handleSelectPalette}
+                    isSelected={selectedPalettes.some(
+                      (selected) =>
+                        selected.id === palette.id ||
+                        (selected.colors.join(",") ===
+                          palette.colors.join(",") &&
+                          selected.name === palette.name)
+                    )}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
+
+        {/* History Toggle Button */}
+        {paletteHistory.length > 0 && (
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="flex items-center justify-center w-full py-2 px-4 rounded-md bg-purple-500/10 hover:bg-purple-500/20 transition-colors duration-200 text-sm text-purple-300"
+          >
+            {showHistory
+              ? "Hide Palette History"
+              : "Show All Generated Palettes"}
+          </button>
+        )}
+
+        {/* Palette History */}
+        {showHistory && paletteHistory.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-400 px-1">
+              All Generated Palettes
+            </h3>
+            <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500/20 scrollbar-track-transparent">
+              {paletteHistory.map((palette) => (
+                <ColorPalette
+                  key={palette.id}
+                  colors={palette.colors}
+                  name={palette.name}
+                  id={palette.id}
+                  onSelect={handleSelectPalette}
+                  isSelected={selectedPalettes.some(
+                    (selected) =>
+                      selected.id === palette.id ||
+                      (selected.colors.join(",") === palette.colors.join(",") &&
+                        selected.name === palette.name)
+                  )}
+                />
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </div>

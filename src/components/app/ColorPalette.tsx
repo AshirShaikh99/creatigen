@@ -6,12 +6,28 @@ import { motion } from "framer-motion";
 export interface ColorPaletteProps {
   colors: string[];
   name?: string;
+  id?: string;
+  onSelect?: (colors: string[], name: string, id?: string) => void;
+  isSelected?: boolean;
 }
 
-export const ColorPalette: React.FC<ColorPaletteProps> = ({ colors, name }) => {
+export const ColorPalette: React.FC<ColorPaletteProps> = ({
+  colors,
+  name,
+  id,
+  onSelect,
+  isSelected = false,
+}) => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-  const handleCopyColor = (color: string, index: number) => {
+  const handleCopyColor = (
+    color: string,
+    index: number,
+    event: React.MouseEvent
+  ) => {
+    // Stop the event from propagating to the parent (to prevent palette selection)
+    event.stopPropagation();
+
     navigator.clipboard.writeText(color);
     setCopiedIndex(index);
 
@@ -20,16 +36,37 @@ export const ColorPalette: React.FC<ColorPaletteProps> = ({ colors, name }) => {
   };
 
   return (
-    <div className="bg-black/30 rounded-xl p-4 border border-purple-500/20 shadow-lg">
-      <h3 className="text-sm font-medium text-gray-200 mb-3">
-        {name || "Color Palette"}
-      </h3>
+    <div
+      className={`bg-black/30 rounded-xl p-4 border ${
+        isSelected
+          ? "border-purple-500 shadow-purple-500/30"
+          : "border-purple-500/20"
+      } shadow-lg relative group/palette transition-all duration-300 ${
+        onSelect ? "hover:border-purple-400/50 cursor-pointer" : ""
+      }`}
+      onClick={() => onSelect && onSelect(colors, name || "Color Palette", id)}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-medium text-gray-200">
+          {name || "Color Palette"}
+        </h3>
+        {isSelected && (
+          <span className="text-xs px-2 py-1 bg-purple-500 text-white rounded-full">
+            Selected
+          </span>
+        )}
+        {onSelect && !isSelected && (
+          <span className="text-xs px-2 py-1 bg-purple-500/0 text-purple-500/0 rounded-full group-hover/palette:bg-purple-500/20 group-hover/palette:text-purple-300 transition-all duration-300">
+            Select
+          </span>
+        )}
+      </div>
       <div className="flex flex-wrap gap-3">
         {colors.map((color, index) => (
           <div key={index} className="flex flex-col items-center">
             <div
               className="relative group"
-              onClick={() => handleCopyColor(color, index)}
+              onClick={(e) => handleCopyColor(color, index, e)}
             >
               <div
                 className="w-16 h-16 rounded-md shadow-lg cursor-pointer ring-2 ring-transparent group-hover:ring-white/30 transition-all duration-200 hover:scale-110 active:scale-95"
