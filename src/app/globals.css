@@ -3,31 +3,53 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 0%;
+  /* Base colors */
+  --background: 0 0% 4%; /* #0A0A0A */
   --foreground: 0 0% 100%;
-  --card: 0 0% 7%;
+
+  /* Card and UI elements */
+  --card: 0 0% 7%; /* #121212 */
   --card-foreground: 0 0% 100%;
-  --popover: 0 0% 7%;
+  --popover: 0 0% 7%; /* #121212 */
   --popover-foreground: 0 0% 100%;
-  --primary: 84 100% 50%;
-  --primary-foreground: 0 0% 0%;
-  --secondary: 0 0% 9%;
+
+  /* Primary colors - Purple/Indigo */
+  --primary: 262 58% 75%; /* #A78BFA */
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary colors */
+  --secondary: 0 0% 10%; /* #1A1A1A */
   --secondary-foreground: 0 0% 100%;
-  --muted: 0 0% 9%;
-  --muted-foreground: 0 0% 60%;
-  --accent: 84 100% 50%;
-  --accent-foreground: 0 0% 0%;
+
+  /* Muted elements */
+  --muted: 0 0% 10%; /* #1A1A1A */
+  --muted-foreground: 0 0% 60%; /* #999999 */
+
+  /* Accent colors - Indigo */
+  --accent: 244 61% 67%; /* #6366F1 */
+  --accent-foreground: 0 0% 100%;
+
+  /* Destructive actions */
   --destructive: 0 100% 50%;
   --destructive-foreground: 0 0% 100%;
-  --border: 84 100% 50%;
-  --input: 0 0% 9%;
-  --ring: 84 100% 50%;
+
+  /* Borders and inputs */
+  --border: 0 0% 12%; /* #1E1E1E */
+  --input: 0 0% 16%; /* #2A2A2A */
+  --ring: 262 58% 75%; /* #A78BFA */
+
+  /* Border radius */
   --radius: 0.5rem;
+
+  /* Custom theme colors */
+  --sidebar: 0 0% 4%; /* #0A0A0A */
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-border: 0 0% 10%; /* #1A1A1A */
 }
 
 body {
-  background-color: black;
-  color: white;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 /* Custom scrollbar */
@@ -36,18 +58,18 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #121212;
+  background: hsl(var(--card));
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #333;
+  background: hsl(var(--muted));
   border-radius: 3px;
   transition: background-color 0.2s;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #c1ff00;
+  background: hsl(var(--primary));
 }
 
 /* Add styles for markdown content */

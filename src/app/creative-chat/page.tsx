@@ -1,31 +1,22 @@
 "use client";
 
-import React from "react";
-import CreativeChatInterface from "@/components/CreativeChatInterface";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CreativeChatPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to dashboard with a query parameter to open Creative Chat
+    router.push("/dashboard?view=creative-chat");
+  }, [router]);
+
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex flex-col">
-      <div className="p-4 pb-2">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="text-gray-400 hover:text-white">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-
-          <div>
-            <h1 className="text-xl font-semibold text-white">Creative Chat</h1>
-            <p className="text-sm text-gray-400">
-              Chat with AI for ideas and creative assistance
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+      <div className="text-white text-center">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#A78BFA] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+        <p className="mt-4 text-gray-400">Redirecting to Creative Chat...</p>
       </div>
-
-      <main className="flex-1 px-4 pb-4">
-        <CreativeChatInterface />
-      </main>
     </div>
   );
 }

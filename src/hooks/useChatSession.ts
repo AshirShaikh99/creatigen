@@ -122,10 +122,17 @@ export function useChatSession({
       setInputValue("");
       setIsLoading(true);
 
+      // Use a small delay to ensure UI updates before starting the API call
+      // This improves perceived performance
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       try {
         // Build URL with query parameters
         const url = new URL("http://localhost:8000/api/v1/chat");
         url.searchParams.append("session_id", sessionId); // Add session_id as query parameter
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
         const response = await fetch(url.toString(), {
           method: "POST",
@@ -137,11 +144,13 @@ export function useChatSession({
             message: text.trim(),
             deep_research: false,
           }),
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         // Log the raw response for debugging
         const responseText = await response.text();
-        console.log("Raw API Response:", responseText);
 
         if (!response.ok) {
           console.error("API Error:", {
@@ -156,7 +165,6 @@ export function useChatSession({
         let data;
         try {
           data = JSON.parse(responseText);
-          console.log("Parsed API Response:", data);
         } catch (parseError) {
           console.error("Failed to parse response as JSON:", parseError);
           throw new Error("Invalid JSON response from server");
@@ -171,9 +179,15 @@ export function useChatSession({
       } catch (error) {
         console.error("Error sending message:", error);
 
+        // Check if it's an abort error (timeout)
+        const errorMessage =
+          error instanceof DOMException && error.name === "AbortError"
+            ? "The request took too long to complete. Please try again."
+            : "Sorry, I encountered an error while processing your request. Please try again.";
+
         // Add error message
         addMessage({
-          text: "Sorry, I encountered an error while processing your request. Please try again.",
+          text: errorMessage,
           sender: "ai",
         });
       } finally {
